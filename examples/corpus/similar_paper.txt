@@ -1,0 +1,3 @@
+A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.
+
+Sentence-level evidence is easier to inspect than a single document-wide detector label.

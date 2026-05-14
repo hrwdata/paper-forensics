@@ -1,0 +1,37 @@
+{
+  "empty_transition": [
+    "it is important to note",
+    "it is worth noting",
+    "it should be noted",
+    "in order to",
+    "moreover",
+    "furthermore",
+    "additionally",
+    "overall,"
+  ],
+  "framework_boilerplate": [
+    "robust framework",
+    "valuable framework",
+    "comprehensive framework",
+    "effective framework",
+    "plays a crucial role",
+    "provides a valuable",
+    "offers a novel",
+    "important avenue"
+  ],
+  "novelty_inflation": [
+    "state-of-the-art",
+    "novel paradigm",
+    "highly effective",
+    "significant potential",
+    "substantial promise",
+    "compelling results"
+  ],
+  "balanced_but_empty_summary": [
+    "these findings highlight",
+    "this underscores the importance",
+    "the results demonstrate that",
+    "this suggests that",
+    "this highlights the fact that"
+  ]
+}

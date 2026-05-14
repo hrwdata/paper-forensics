@@ -1,0 +1,735 @@
+{
+  "input_path": "examples\\sample_tex_project\\main.tex",
+  "corpus_path": "examples\\corpus",
+  "sentences": [
+    {
+      "sentence": {
+        "sentence_id": "introduction.par_001.sent_001",
+        "clean_text": "This paper studies a compact auditing pipeline for academic prose.",
+        "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "source_context_char_start": 13,
+        "source_context_char_end": 301,
+        "source_file": "examples\\sample_tex_project\\sections\\introduction.tex",
+        "section": "Introduction",
+        "subsection": "",
+        "paragraph_id": "introduction.par_001",
+        "paragraph_index": 1,
+        "sentence_index": 1,
+        "char_start": 0,
+        "char_end": 66
+      },
+      "plagiarism_risk_score": 0.5242899191008171,
+      "ai_rhetoric_risk_score": 0.20446802989309606,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.46901027774037785,
+        "lexical_overlap_score": 0.35294117647058826,
+        "rare_phrase_overlap_score": 0.9,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
+            "vector_similarity": 0.46901027774037785,
+            "lexical_overlap": 0.35294117647058826,
+            "rare_phrase_overlap": 0.9,
+            "overlapping_phrases": [
+              "compact auditing pipeline for academic",
+              "auditing pipeline for academic prose",
+              "a compact auditing pipeline for",
+              "auditing pipeline for academic",
+              "compact auditing pipeline for"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.",
+            "vector_similarity": 0.02739712091471181,
+            "lexical_overlap": 0.043478260869565216,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+            "vector_similarity": 0.017487152898206144,
+            "lexical_overlap": 0.045454545454545456,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [],
+        "triggered_categories": [],
+        "phrase_pattern_score": 0.0,
+        "semantic_thinness_score": 0.13500000000000004,
+        "style_shift_score": 0.6388950853726588,
+        "smoothness_score": 0.2611111111111112,
+        "heuristic_classifier_score": 0.16827901707453177,
+        "content_ratio": 0.7,
+        "abstract_word_ratio": 0.0
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "introduction.par_001.sent_002",
+        "clean_text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "source_context_char_start": 13,
+        "source_context_char_end": 301,
+        "source_file": "examples\\sample_tex_project\\sections\\introduction.tex",
+        "section": "Introduction",
+        "subsection": "",
+        "paragraph_id": "introduction.par_001",
+        "paragraph_index": 1,
+        "sentence_index": 2,
+        "char_start": 67,
+        "char_end": 200
+      },
+      "plagiarism_risk_score": 0.4970316222335336,
+      "ai_rhetoric_risk_score": 0.5050808052348125,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.3998363535014196,
+        "lexical_overlap_score": 0.3684210526315789,
+        "rare_phrase_overlap_score": 0.9,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
+            "vector_similarity": 0.3998363535014196,
+            "lexical_overlap": 0.3684210526315789,
+            "rare_phrase_overlap": 0.9,
+            "overlapping_phrases": [
+              "is important to note that",
+              "it is important to note",
+              "important to note that",
+              "is important to note",
+              "it is important to"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
+            "vector_similarity": 0.0467642509059671,
+            "lexical_overlap": 0.03571428571428571,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+            "vector_similarity": 0.04459775688272741,
+            "lexical_overlap": 0.07407407407407407,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [
+          "it is important to note",
+          "robust framework"
+        ],
+        "triggered_categories": [
+          "empty_transition",
+          "framework_boilerplate"
+        ],
+        "phrase_pattern_score": 0.6666666666666666,
+        "semantic_thinness_score": 0.47857142857142854,
+        "style_shift_score": 0.27787676621884483,
+        "smoothness_score": 0.43281250000000004,
+        "heuristic_classifier_score": 0.5324801151485308,
+        "content_ratio": 0.5714285714285714,
+        "abstract_word_ratio": 0.19047619047619047
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "introduction.par_002.sent_001",
+        "clean_text": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score.",
+        "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "source_context_char_start": 303,
+        "source_context_char_end": 535,
+        "source_file": "examples\\sample_tex_project\\sections\\introduction.tex",
+        "section": "Introduction",
+        "subsection": "",
+        "paragraph_id": "introduction.par_002",
+        "paragraph_index": 2,
+        "sentence_index": 1,
+        "char_start": 0,
+        "char_end": 132
+      },
+      "plagiarism_risk_score": 0.3008061324176172,
+      "ai_rhetoric_risk_score": 0.19526412596537968,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.15879623629035708,
+        "lexical_overlap_score": 0.21739130434782608,
+        "rare_phrase_overlap_score": 0.7,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.",
+            "vector_similarity": 0.15879623629035708,
+            "lexical_overlap": 0.21739130434782608,
+            "rare_phrase_overlap": 0.7,
+            "overlapping_phrases": [
+              "sentence level evidence"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
+            "vector_similarity": 0.05139492461683037,
+            "lexical_overlap": 0.07692307692307693,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
+            "vector_similarity": 0.04757610445412906,
+            "lexical_overlap": 0.06896551724137931,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [],
+        "triggered_categories": [],
+        "phrase_pattern_score": 0.0,
+        "semantic_thinness_score": 0.22272727272727272,
+        "style_shift_score": 0.37500222546246953,
+        "smoothness_score": 0.5040000000000001,
+        "heuristic_classifier_score": 0.14181862691067573,
+        "content_ratio": 0.7272727272727273,
+        "abstract_word_ratio": 0.0
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "introduction.par_002.sent_002",
+        "clean_text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "source_context_char_start": 303,
+        "source_context_char_end": 535,
+        "source_file": "examples\\sample_tex_project\\sections\\introduction.tex",
+        "section": "Introduction",
+        "subsection": "",
+        "paragraph_id": "introduction.par_002",
+        "paragraph_index": 2,
+        "sentence_index": 2,
+        "char_start": 133,
+        "char_end": 232
+      },
+      "plagiarism_risk_score": 0.6168953400324728,
+      "ai_rhetoric_risk_score": 0.2705669556736579,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.5931007556277172,
+        "lexical_overlap_score": 0.5,
+        "rare_phrase_overlap_score": 0.9,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.",
+            "vector_similarity": 0.5931007556277172,
+            "lexical_overlap": 0.5,
+            "rare_phrase_overlap": 0.9,
+            "overlapping_phrases": [
+              "inspect than a single document",
+              "evidence is easier to inspect",
+              "than a single document wide",
+              "is easier to inspect than",
+              "easier to inspect than a"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
+            "vector_similarity": 0.0662381731869356,
+            "lexical_overlap": 0.09090909090909091,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
+            "vector_similarity": 0.03937774242470099,
+            "lexical_overlap": 0.038461538461538464,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [
+          "the results demonstrate that"
+        ],
+        "triggered_categories": [
+          "balanced_but_empty_summary"
+        ],
+        "phrase_pattern_score": 0.3333333333333333,
+        "semantic_thinness_score": 0.140625,
+        "style_shift_score": 0.11117555609238441,
+        "smoothness_score": 0.734,
+        "heuristic_classifier_score": 0.23108927788514352,
+        "content_ratio": 0.6875,
+        "abstract_word_ratio": 0.0
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "methods.par_003.sent_001",
+        "clean_text": "Our workflow indexes a local corpus and compares each sentence against previously written literature.",
+        "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+        "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+        "source_context_char_start": 538,
+        "source_context_char_end": 838,
+        "source_file": "examples\\sample_tex_project\\sections\\methods.tex",
+        "section": "Methods",
+        "subsection": "",
+        "paragraph_id": "methods.par_003",
+        "paragraph_index": 3,
+        "sentence_index": 1,
+        "char_start": 0,
+        "char_end": 101
+      },
+      "plagiarism_risk_score": 0.33749040194788893,
+      "ai_rhetoric_risk_score": 0.13408846022487145,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.20235962337626112,
+        "lexical_overlap_score": 0.2857142857142857,
+        "rare_phrase_overlap_score": 0.7,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
+            "vector_similarity": 0.20235962337626112,
+            "lexical_overlap": 0.2857142857142857,
+            "rare_phrase_overlap": 0.7,
+            "overlapping_phrases": [
+              "each sentence against"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+            "vector_similarity": 0.03292571560021256,
+            "lexical_overlap": 0.08,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.",
+            "vector_similarity": 0.023608387708746428,
+            "lexical_overlap": 0.043478260869565216,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [],
+        "triggered_categories": [],
+        "phrase_pattern_score": 0.0,
+        "semantic_thinness_score": 0.06428571428571431,
+        "style_shift_score": 0.16676572829487016,
+        "smoothness_score": 0.794,
+        "heuristic_classifier_score": 0.052638859944688324,
+        "content_ratio": 0.8571428571428571,
+        "abstract_word_ratio": 0.0
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "methods.par_003.sent_002",
+        "clean_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+        "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+        "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+        "source_context_char_start": 538,
+        "source_context_char_end": 838,
+        "source_file": "examples\\sample_tex_project\\sections\\methods.tex",
+        "section": "Methods",
+        "subsection": "",
+        "paragraph_id": "methods.par_003",
+        "paragraph_index": 3,
+        "sentence_index": 2,
+        "char_start": 102,
+        "char_end": 222
+      },
+      "plagiarism_risk_score": 0.9250000000000002,
+      "ai_rhetoric_risk_score": 0.11878196292776455,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 1.0000000000000002,
+        "lexical_overlap_score": 1.0,
+        "rare_phrase_overlap_score": 0.9,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+            "vector_similarity": 1.0000000000000002,
+            "lexical_overlap": 1.0,
+            "rare_phrase_overlap": 0.9,
+            "overlapping_phrases": [
+              "similarity against candidate source passages",
+              "vector similarity against candidate source",
+              "proposed pipeline computes lexical overlap",
+              "pipeline computes lexical overlap phrase",
+              "and vector similarity against candidate"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
+            "vector_similarity": 0.03015269018655764,
+            "lexical_overlap": 0.07692307692307693,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.",
+            "vector_similarity": 0.015454140751374116,
+            "lexical_overlap": 0.03571428571428571,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [],
+        "triggered_categories": [],
+        "phrase_pattern_score": 0.0,
+        "semantic_thinness_score": 0.05999999999999999,
+        "style_shift_score": 0.01537255876256611,
+        "smoothness_score": 0.986,
+        "heuristic_classifier_score": 0.021074511752513216,
+        "content_ratio": 0.8666666666666667,
+        "abstract_word_ratio": 0.0
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "methods.par_004.sent_001",
+        "clean_text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.",
+        "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.",
+        "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.",
+        "source_context_char_start": 840,
+        "source_context_char_end": 1044,
+        "source_file": "examples\\sample_tex_project\\sections\\methods.tex",
+        "section": "Methods",
+        "subsection": "",
+        "paragraph_id": "methods.par_004",
+        "paragraph_index": 4,
+        "sentence_index": 1,
+        "char_start": 0,
+        "char_end": 107
+      },
+      "plagiarism_risk_score": 0.051407539435661516,
+      "ai_rhetoric_risk_score": 0.31651401748882263,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.05013641242112815,
+        "lexical_overlap_score": 0.11538461538461539,
+        "rare_phrase_overlap_score": 0.0,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.",
+            "vector_similarity": 0.05013641242112815,
+            "lexical_overlap": 0.11538461538461539,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.",
+            "vector_similarity": 0.04192146158087854,
+            "lexical_overlap": 0.08695652173913043,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+            "vector_similarity": 0.030617621703955312,
+            "lexical_overlap": 0.07692307692307693,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [
+          "additionally"
+        ],
+        "triggered_categories": [
+          "empty_transition"
+        ],
+        "phrase_pattern_score": 0.3333333333333333,
+        "semantic_thinness_score": 0.27,
+        "style_shift_score": 0.037298564343133306,
+        "smoothness_score": 0.99375,
+        "heuristic_classifier_score": 0.2551263795352933,
+        "content_ratio": 0.7333333333333333,
+        "abstract_word_ratio": 0.0
+      }
+    },
+    {
+      "sentence": {
+        "sentence_id": "methods.par_004.sent_002",
+        "clean_text": "This highlights the fact that some academic filler language is more irritating than informative.",
+        "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.",
+        "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.",
+        "source_context_char_start": 840,
+        "source_context_char_end": 1044,
+        "source_file": "examples\\sample_tex_project\\sections\\methods.tex",
+        "section": "Methods",
+        "subsection": "",
+        "paragraph_id": "methods.par_004",
+        "paragraph_index": 4,
+        "sentence_index": 2,
+        "char_start": 108,
+        "char_end": 204
+      },
+      "plagiarism_risk_score": 0.3854255663101094,
+      "ai_rhetoric_risk_score": 0.29004481579509545,
+      "plagiarism_evidence": {
+        "vector_similarity_score": 0.23572831160700639,
+        "lexical_overlap_score": 0.21739130434782608,
+        "rare_phrase_overlap_score": 0.9,
+        "boilerplate_discount": 0.0,
+        "top_matches": [
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.",
+            "vector_similarity": 0.23572831160700639,
+            "lexical_overlap": 0.21739130434782608,
+            "rare_phrase_overlap": 0.9,
+            "overlapping_phrases": [
+              "this highlights the fact that",
+              "highlights the fact that",
+              "this highlights the fact",
+              "highlights the fact",
+              "this highlights the"
+            ]
+          },
+          {
+            "source_path": "examples\\corpus\\boilerplate_note.txt",
+            "source_label": "boilerplate_note",
+            "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
+            "vector_similarity": 0.04896762356290807,
+            "lexical_overlap": 0.09090909090909091,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          },
+          {
+            "source_path": "examples\\corpus\\similar_paper.txt",
+            "source_label": "similar_paper",
+            "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.",
+            "vector_similarity": 0.03635512795453622,
+            "lexical_overlap": 0.043478260869565216,
+            "rare_phrase_overlap": 0.0,
+            "overlapping_phrases": []
+          }
+        ]
+      },
+      "ai_evidence": {
+        "triggered_phrases": [
+          "this highlights the fact that"
+        ],
+        "triggered_categories": [
+          "balanced_but_empty_summary"
+        ],
+        "phrase_pattern_score": 0.3333333333333333,
+        "semantic_thinness_score": 0.1607142857142857,
+        "style_shift_score": 0.055759263715080304,
+        "smoothness_score": 0.9944444444444445,
+        "heuristic_classifier_score": 0.22603280512396842,
+        "content_ratio": 0.7142857142857143,
+        "abstract_word_ratio": 0.07142857142857142
+      }
+    }
+  ],
+  "paragraphs": [
+    {
+      "label": "introduction.par_001",
+      "mean_plagiarism_risk": 0.5106607706671753,
+      "mean_ai_rhetoric_risk": 0.3547744175639543,
+      "max_plagiarism_risk": 0.5242899191008171,
+      "max_ai_rhetoric_risk": 0.5050808052348125,
+      "sentence_ids": [
+        "introduction.par_001.sent_001",
+        "introduction.par_001.sent_002"
+      ]
+    },
+    {
+      "label": "introduction.par_002",
+      "mean_plagiarism_risk": 0.458850736225045,
+      "mean_ai_rhetoric_risk": 0.2329155408195188,
+      "max_plagiarism_risk": 0.6168953400324728,
+      "max_ai_rhetoric_risk": 0.2705669556736579,
+      "sentence_ids": [
+        "introduction.par_002.sent_001",
+        "introduction.par_002.sent_002"
+      ]
+    },
+    {
+      "label": "methods.par_003",
+      "mean_plagiarism_risk": 0.6312452009739445,
+      "mean_ai_rhetoric_risk": 0.12643521157631799,
+      "max_plagiarism_risk": 0.9250000000000002,
+      "max_ai_rhetoric_risk": 0.13408846022487145,
+      "sentence_ids": [
+        "methods.par_003.sent_001",
+        "methods.par_003.sent_002"
+      ]
+    },
+    {
+      "label": "methods.par_004",
+      "mean_plagiarism_risk": 0.21841655287288544,
+      "mean_ai_rhetoric_risk": 0.303279416641959,
+      "max_plagiarism_risk": 0.3854255663101094,
+      "max_ai_rhetoric_risk": 0.31651401748882263,
+      "sentence_ids": [
+        "methods.par_004.sent_001",
+        "methods.par_004.sent_002"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "label": "Introduction",
+      "mean_plagiarism_risk": 0.48475575344611016,
+      "mean_ai_rhetoric_risk": 0.2938449791917365,
+      "max_plagiarism_risk": 0.6168953400324728,
+      "max_ai_rhetoric_risk": 0.5050808052348125,
+      "sentence_ids": [
+        "introduction.par_001.sent_001",
+        "introduction.par_001.sent_002",
+        "introduction.par_002.sent_001",
+        "introduction.par_002.sent_002"
+      ]
+    },
+    {
+      "label": "Methods",
+      "mean_plagiarism_risk": 0.424830876923415,
+      "mean_ai_rhetoric_risk": 0.2148573141091385,
+      "max_plagiarism_risk": 0.9250000000000002,
+      "max_ai_rhetoric_risk": 0.31651401748882263,
+      "sentence_ids": [
+        "methods.par_003.sent_001",
+        "methods.par_003.sent_002",
+        "methods.par_004.sent_001",
+        "methods.par_004.sent_002"
+      ]
+    }
+  ],
+  "document_summary": {
+    "sentence_count": 8,
+    "mean_plagiarism_risk": 0.4547933151847626,
+    "mean_ai_rhetoric_risk": 0.2543511466504375,
+    "top_plagiarism_sentences": [
+      {
+        "sentence_id": "methods.par_003.sent_002",
+        "section": "Methods",
+        "text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.",
+        "score": 0.9250000000000002
+      },
+      {
+        "sentence_id": "introduction.par_002.sent_002",
+        "section": "Introduction",
+        "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "score": 0.6168953400324728
+      },
+      {
+        "sentence_id": "introduction.par_001.sent_001",
+        "section": "Introduction",
+        "text": "This paper studies a compact auditing pipeline for academic prose.",
+        "score": 0.5242899191008171
+      },
+      {
+        "sentence_id": "introduction.par_001.sent_002",
+        "section": "Introduction",
+        "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "score": 0.4970316222335336
+      },
+      {
+        "sentence_id": "methods.par_004.sent_002",
+        "section": "Methods",
+        "text": "This highlights the fact that some academic filler language is more irritating than informative.",
+        "score": 0.3854255663101094
+      }
+    ],
+    "top_ai_sentences": [
+      {
+        "sentence_id": "introduction.par_001.sent_002",
+        "section": "Introduction",
+        "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "score": 0.5050808052348125
+      },
+      {
+        "sentence_id": "methods.par_004.sent_001",
+        "section": "Methods",
+        "text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.",
+        "score": 0.31651401748882263
+      },
+      {
+        "sentence_id": "methods.par_004.sent_002",
+        "section": "Methods",
+        "text": "This highlights the fact that some academic filler language is more irritating than informative.",
+        "score": 0.29004481579509545
+      },
+      {
+        "sentence_id": "introduction.par_002.sent_002",
+        "section": "Introduction",
+        "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "score": 0.2705669556736579
+      },
+      {
+        "sentence_id": "introduction.par_001.sent_001",
+        "section": "Introduction",
+        "text": "This paper studies a compact auditing pipeline for academic prose.",
+        "score": 0.20446802989309606
+      }
+    ]
+  },
+  "raw_tex_source": "\n\\maketitle\n\n\\section{Introduction}\n[[SOURCE:examples\\sample_tex_project\\sections\\introduction.tex]]\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.\n\nWe focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.\n\n\n\\section{Methods}\n[[SOURCE:examples\\sample_tex_project\\sections\\methods.tex]]\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.\n\nAdditionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.\n\n\n",
+  "generated_files": {
+    "json": "audit.json",
+    "csv": "audit.csv",
+    "html": "report.html"
+  }
+}

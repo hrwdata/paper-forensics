@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paper-forensics"
+version = "0.1.0"
+description = "TeX-first paper forensics workbench for sentence-level plagiarism risk and AI-rhetoric risk."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Paper Forensics Contributors" }
+]
+license = { text = "MIT" }
+dependencies = [
+  "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-cov>=4.0",
+]
+
+[project.scripts]
+paper-forensics = "paper_forensics.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"paper_forensics" = [
+  "data/*.json",
+  "report/templates/*.html",
+  "report/assets/*.css",
+  "report/assets/*.js",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src",
+]
+testpaths = [
+  "tests",
+]

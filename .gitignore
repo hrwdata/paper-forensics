@@ -1,0 +1,9 @@
+# Python cache and local envs
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv/
+
+# Local run artifacts (keep curated sample artifacts)
+outputs/app_runs/
+outputs/latest/
