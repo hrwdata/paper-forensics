@@ -20,7 +20,7 @@
         "char_end": 66
       },
       "plagiarism_risk_score": 0.5242899191008171,
-      "ai_rhetoric_risk_score": 0.20446802989309606,
+      "ai_rhetoric_risk_score": 0.18766802989309606,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.46901027774037785,
         "lexical_overlap_score": 0.35294117647058826,
@@ -66,12 +66,18 @@
         "triggered_phrases": [],
         "triggered_categories": [],
         "phrase_pattern_score": 0.0,
-        "semantic_thinness_score": 0.13500000000000004,
+        "semantic_thinness_score": 0.07500000000000001,
         "style_shift_score": 0.6388950853726588,
         "smoothness_score": 0.2611111111111112,
-        "heuristic_classifier_score": 0.16827901707453177,
+        "heuristic_classifier_score": 0.15027901707453176,
         "content_ratio": 0.7,
-        "abstract_word_ratio": 0.0
+        "abstract_word_ratio": 0.0,
+        "empty_transition_score": 0.0,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.0,
+        "low_specificity_score": 0.0,
+        "finding_summary": ""
       }
     },
     {
@@ -92,7 +98,7 @@
         "char_end": 200
       },
       "plagiarism_risk_score": 0.4970316222335336,
-      "ai_rhetoric_risk_score": 0.5050808052348125,
+      "ai_rhetoric_risk_score": 0.5078408052348125,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.3998363535014196,
         "lexical_overlap_score": 0.3684210526315789,
@@ -111,7 +117,7 @@
               "it is important to note",
               "important to note that",
               "is important to note",
-              "it is important to"
+              "a robust framework"
             ]
           },
           {
@@ -144,12 +150,18 @@
           "framework_boilerplate"
         ],
         "phrase_pattern_score": 0.6666666666666666,
-        "semantic_thinness_score": 0.47857142857142854,
+        "semantic_thinness_score": 0.48842857142857143,
         "style_shift_score": 0.27787676621884483,
         "smoothness_score": 0.43281250000000004,
-        "heuristic_classifier_score": 0.5324801151485308,
+        "heuristic_classifier_score": 0.5354372580056737,
         "content_ratio": 0.5714285714285714,
-        "abstract_word_ratio": 0.19047619047619047
+        "abstract_word_ratio": 0.19047619047619047,
+        "empty_transition_score": 0.5,
+        "framework_boilerplate_score": 0.5,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.0,
+        "low_specificity_score": 0.6676190476190476,
+        "finding_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50"
       }
     },
     {
@@ -170,7 +182,7 @@
         "char_end": 132
       },
       "plagiarism_risk_score": 0.3008061324176172,
-      "ai_rhetoric_risk_score": 0.19526412596537968,
+      "ai_rhetoric_risk_score": 0.1799913986926524,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.15879623629035708,
         "lexical_overlap_score": 0.21739130434782608,
@@ -212,12 +224,18 @@
         "triggered_phrases": [],
         "triggered_categories": [],
         "phrase_pattern_score": 0.0,
-        "semantic_thinness_score": 0.22272727272727272,
+        "semantic_thinness_score": 0.16818181818181818,
         "style_shift_score": 0.37500222546246953,
         "smoothness_score": 0.5040000000000001,
-        "heuristic_classifier_score": 0.14181862691067573,
+        "heuristic_classifier_score": 0.12545499054703937,
         "content_ratio": 0.7272727272727273,
-        "abstract_word_ratio": 0.0
+        "abstract_word_ratio": 0.0,
+        "empty_transition_score": 0.0,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.0,
+        "low_specificity_score": 0.0,
+        "finding_summary": ""
       }
     },
     {
@@ -238,7 +256,7 @@
         "char_end": 232
       },
       "plagiarism_risk_score": 0.6168953400324728,
-      "ai_rhetoric_risk_score": 0.2705669556736579,
+      "ai_rhetoric_risk_score": 0.25380195567365793,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.5931007556277172,
         "lexical_overlap_score": 0.5,
@@ -257,7 +275,7 @@
               "evidence is easier to inspect",
               "than a single document wide",
               "is easier to inspect than",
-              "easier to inspect than a"
+              "to inspect than a single"
             ]
           },
           {
@@ -288,12 +306,18 @@
           "balanced_but_empty_summary"
         ],
         "phrase_pattern_score": 0.3333333333333333,
-        "semantic_thinness_score": 0.140625,
+        "semantic_thinness_score": 0.08074999999999999,
         "style_shift_score": 0.11117555609238441,
         "smoothness_score": 0.734,
-        "heuristic_classifier_score": 0.23108927788514352,
+        "heuristic_classifier_score": 0.21312677788514353,
         "content_ratio": 0.6875,
-        "abstract_word_ratio": 0.0
+        "abstract_word_ratio": 0.0,
+        "empty_transition_score": 0.0,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.5,
+        "low_specificity_score": 0.007499999999999973,
+        "finding_summary": "balanced_summary=0.50"
       }
     },
     {
@@ -314,7 +338,7 @@
         "char_end": 101
       },
       "plagiarism_risk_score": 0.33749040194788893,
-      "ai_rhetoric_risk_score": 0.13408846022487145,
+      "ai_rhetoric_risk_score": 0.12608846022487147,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.20235962337626112,
         "lexical_overlap_score": 0.2857142857142857,
@@ -356,12 +380,18 @@
         "triggered_phrases": [],
         "triggered_categories": [],
         "phrase_pattern_score": 0.0,
-        "semantic_thinness_score": 0.06428571428571431,
+        "semantic_thinness_score": 0.035714285714285726,
         "style_shift_score": 0.16676572829487016,
         "smoothness_score": 0.794,
-        "heuristic_classifier_score": 0.052638859944688324,
+        "heuristic_classifier_score": 0.044067431373259754,
         "content_ratio": 0.8571428571428571,
-        "abstract_word_ratio": 0.0
+        "abstract_word_ratio": 0.0,
+        "empty_transition_score": 0.0,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.0,
+        "low_specificity_score": 0.0,
+        "finding_summary": ""
       }
     },
     {
@@ -382,7 +412,7 @@
         "char_end": 222
       },
       "plagiarism_risk_score": 0.9250000000000002,
-      "ai_rhetoric_risk_score": 0.11878196292776455,
+      "ai_rhetoric_risk_score": 0.11131529626109789,
       "plagiarism_evidence": {
         "vector_similarity_score": 1.0000000000000002,
         "lexical_overlap_score": 1.0,
@@ -398,10 +428,10 @@
             "rare_phrase_overlap": 0.9,
             "overlapping_phrases": [
               "similarity against candidate source passages",
-              "vector similarity against candidate source",
               "proposed pipeline computes lexical overlap",
+              "vector similarity against candidate source",
               "pipeline computes lexical overlap phrase",
-              "and vector similarity against candidate"
+              "computes lexical overlap phrase overlap"
             ]
           },
           {
@@ -428,12 +458,18 @@
         "triggered_phrases": [],
         "triggered_categories": [],
         "phrase_pattern_score": 0.0,
-        "semantic_thinness_score": 0.05999999999999999,
+        "semantic_thinness_score": 0.033333333333333326,
         "style_shift_score": 0.01537255876256611,
         "smoothness_score": 0.986,
-        "heuristic_classifier_score": 0.021074511752513216,
+        "heuristic_classifier_score": 0.013074511752513219,
         "content_ratio": 0.8666666666666667,
-        "abstract_word_ratio": 0.0
+        "abstract_word_ratio": 0.0,
+        "empty_transition_score": 0.0,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.0,
+        "low_specificity_score": 0.0,
+        "finding_summary": ""
       }
     },
     {
@@ -454,7 +490,7 @@
         "char_end": 107
       },
       "plagiarism_risk_score": 0.051407539435661516,
-      "ai_rhetoric_risk_score": 0.31651401748882263,
+      "ai_rhetoric_risk_score": 0.30158068415548933,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.05013641242112815,
         "lexical_overlap_score": 0.11538461538461539,
@@ -498,12 +534,18 @@
           "empty_transition"
         ],
         "phrase_pattern_score": 0.3333333333333333,
-        "semantic_thinness_score": 0.27,
+        "semantic_thinness_score": 0.21666666666666667,
         "style_shift_score": 0.037298564343133306,
         "smoothness_score": 0.99375,
-        "heuristic_classifier_score": 0.2551263795352933,
+        "heuristic_classifier_score": 0.2391263795352933,
         "content_ratio": 0.7333333333333333,
-        "abstract_word_ratio": 0.0
+        "abstract_word_ratio": 0.0,
+        "empty_transition_score": 0.5,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.0,
+        "low_specificity_score": 0.0,
+        "finding_summary": "empty_transition=0.50"
       }
     },
     {
@@ -524,7 +566,7 @@
         "char_end": 204
       },
       "plagiarism_risk_score": 0.3854255663101094,
-      "ai_rhetoric_risk_score": 0.29004481579509545,
+      "ai_rhetoric_risk_score": 0.2917448157950954,
       "plagiarism_evidence": {
         "vector_similarity_score": 0.23572831160700639,
         "lexical_overlap_score": 0.21739130434782608,
@@ -540,17 +582,17 @@
             "rare_phrase_overlap": 0.9,
             "overlapping_phrases": [
               "this highlights the fact that",
-              "highlights the fact that",
               "this highlights the fact",
-              "highlights the fact",
-              "this highlights the"
+              "highlights the fact that",
+              "this highlights the",
+              "highlights the fact"
             ]
           },
           {
             "source_path": "examples\\corpus\\boilerplate_note.txt",
             "source_label": "boilerplate_note",
             "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
-            "vector_similarity": 0.04896762356290807,
+            "vector_similarity": 0.04896762356290806,
             "lexical_overlap": 0.09090909090909091,
             "rare_phrase_overlap": 0.0,
             "overlapping_phrases": []
@@ -574,12 +616,18 @@
           "balanced_but_empty_summary"
         ],
         "phrase_pattern_score": 0.3333333333333333,
-        "semantic_thinness_score": 0.1607142857142857,
+        "semantic_thinness_score": 0.16678571428571426,
         "style_shift_score": 0.055759263715080304,
         "smoothness_score": 0.9944444444444445,
-        "heuristic_classifier_score": 0.22603280512396842,
+        "heuristic_classifier_score": 0.22785423369539698,
         "content_ratio": 0.7142857142857143,
-        "abstract_word_ratio": 0.07142857142857142
+        "abstract_word_ratio": 0.07142857142857142,
+        "empty_transition_score": 0.0,
+        "framework_boilerplate_score": 0.0,
+        "unsupported_confidence_score": 0.0,
+        "balanced_summary_score": 0.5,
+        "low_specificity_score": 0.22142857142857142,
+        "finding_summary": "balanced_summary=0.50"
       }
     }
   ],
@@ -587,9 +635,9 @@
     {
       "label": "introduction.par_001",
       "mean_plagiarism_risk": 0.5106607706671753,
-      "mean_ai_rhetoric_risk": 0.3547744175639543,
+      "mean_ai_rhetoric_risk": 0.34775441756395425,
       "max_plagiarism_risk": 0.5242899191008171,
-      "max_ai_rhetoric_risk": 0.5050808052348125,
+      "max_ai_rhetoric_risk": 0.5078408052348125,
       "sentence_ids": [
         "introduction.par_001.sent_001",
         "introduction.par_001.sent_002"
@@ -598,9 +646,9 @@
     {
       "label": "introduction.par_002",
       "mean_plagiarism_risk": 0.458850736225045,
-      "mean_ai_rhetoric_risk": 0.2329155408195188,
+      "mean_ai_rhetoric_risk": 0.21689667718315517,
       "max_plagiarism_risk": 0.6168953400324728,
-      "max_ai_rhetoric_risk": 0.2705669556736579,
+      "max_ai_rhetoric_risk": 0.25380195567365793,
       "sentence_ids": [
         "introduction.par_002.sent_001",
         "introduction.par_002.sent_002"
@@ -609,9 +657,9 @@
     {
       "label": "methods.par_003",
       "mean_plagiarism_risk": 0.6312452009739445,
-      "mean_ai_rhetoric_risk": 0.12643521157631799,
+      "mean_ai_rhetoric_risk": 0.11870187824298467,
       "max_plagiarism_risk": 0.9250000000000002,
-      "max_ai_rhetoric_risk": 0.13408846022487145,
+      "max_ai_rhetoric_risk": 0.12608846022487147,
       "sentence_ids": [
         "methods.par_003.sent_001",
         "methods.par_003.sent_002"
@@ -620,9 +668,9 @@
     {
       "label": "methods.par_004",
       "mean_plagiarism_risk": 0.21841655287288544,
-      "mean_ai_rhetoric_risk": 0.303279416641959,
+      "mean_ai_rhetoric_risk": 0.2966627499752924,
       "max_plagiarism_risk": 0.3854255663101094,
-      "max_ai_rhetoric_risk": 0.31651401748882263,
+      "max_ai_rhetoric_risk": 0.30158068415548933,
       "sentence_ids": [
         "methods.par_004.sent_001",
         "methods.par_004.sent_002"
@@ -633,9 +681,9 @@
     {
       "label": "Introduction",
       "mean_plagiarism_risk": 0.48475575344611016,
-      "mean_ai_rhetoric_risk": 0.2938449791917365,
+      "mean_ai_rhetoric_risk": 0.2823255473735547,
       "max_plagiarism_risk": 0.6168953400324728,
-      "max_ai_rhetoric_risk": 0.5050808052348125,
+      "max_ai_rhetoric_risk": 0.5078408052348125,
       "sentence_ids": [
         "introduction.par_001.sent_001",
         "introduction.par_001.sent_002",
@@ -646,9 +694,9 @@
     {
       "label": "Methods",
       "mean_plagiarism_risk": 0.424830876923415,
-      "mean_ai_rhetoric_risk": 0.2148573141091385,
+      "mean_ai_rhetoric_risk": 0.2076823141091385,
       "max_plagiarism_risk": 0.9250000000000002,
-      "max_ai_rhetoric_risk": 0.31651401748882263,
+      "max_ai_rhetoric_risk": 0.30158068415548933,
       "sentence_ids": [
         "methods.par_003.sent_001",
         "methods.par_003.sent_002",
@@ -660,7 +708,64 @@
   "document_summary": {
     "sentence_count": 8,
     "mean_plagiarism_risk": 0.4547933151847626,
-    "mean_ai_rhetoric_risk": 0.2543511466504375,
+    "mean_ai_rhetoric_risk": 0.24500393074134663,
+    "ai_tell_category_totals": {
+      "balanced_summary": 2,
+      "empty_transition": 2,
+      "framework_boilerplate": 1,
+      "low_specificity": 1
+    },
+    "top_ai_tell_findings": [
+      {
+        "sentence_id": "introduction.par_001.sent_002",
+        "section": "Introduction",
+        "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
+        "score": 0.5078408052348125,
+        "finding_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50",
+        "triggered_categories": [
+          "empty_transition",
+          "framework_boilerplate"
+        ]
+      },
+      {
+        "sentence_id": "methods.par_004.sent_001",
+        "section": "Methods",
+        "text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.",
+        "score": 0.30158068415548933,
+        "finding_summary": "empty_transition=0.50",
+        "triggered_categories": [
+          "empty_transition"
+        ]
+      },
+      {
+        "sentence_id": "methods.par_004.sent_002",
+        "section": "Methods",
+        "text": "This highlights the fact that some academic filler language is more irritating than informative.",
+        "score": 0.2917448157950954,
+        "finding_summary": "balanced_summary=0.50",
+        "triggered_categories": [
+          "balanced_but_empty_summary"
+        ]
+      },
+      {
+        "sentence_id": "introduction.par_002.sent_002",
+        "section": "Introduction",
+        "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
+        "score": 0.25380195567365793,
+        "finding_summary": "balanced_summary=0.50",
+        "triggered_categories": [
+          "balanced_but_empty_summary"
+        ]
+      },
+      {
+        "sentence_id": "introduction.par_001.sent_001",
+        "section": "Introduction",
+        "text": "This paper studies a compact auditing pipeline for academic prose.",
+        "score": 0.18766802989309606,
+        "finding_summary": "",
+        "triggered_categories": []
+      }
+    ],
     "top_plagiarism_sentences": [
       {
         "sentence_id": "methods.par_003.sent_002",
@@ -698,31 +803,31 @@
         "sentence_id": "introduction.par_001.sent_002",
         "section": "Introduction",
         "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.",
-        "score": 0.5050808052348125
+        "score": 0.5078408052348125
       },
       {
         "sentence_id": "methods.par_004.sent_001",
         "section": "Methods",
         "text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.",
-        "score": 0.31651401748882263
+        "score": 0.30158068415548933
       },
       {
         "sentence_id": "methods.par_004.sent_002",
         "section": "Methods",
         "text": "This highlights the fact that some academic filler language is more irritating than informative.",
-        "score": 0.29004481579509545
+        "score": 0.2917448157950954
       },
       {
         "sentence_id": "introduction.par_002.sent_002",
         "section": "Introduction",
         "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.",
-        "score": 0.2705669556736579
+        "score": 0.25380195567365793
       },
       {
         "sentence_id": "introduction.par_001.sent_001",
         "section": "Introduction",
         "text": "This paper studies a compact auditing pipeline for academic prose.",
-        "score": 0.20446802989309606
+        "score": 0.18766802989309606
       }
     ]
   },

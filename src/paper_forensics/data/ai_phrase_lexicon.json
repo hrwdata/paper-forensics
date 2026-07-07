@@ -27,6 +27,14 @@
     "substantial promise",
     "compelling results"
   ],
+  "unsupported_confidence": [
+    "clearly demonstrates",
+    "conclusively shows",
+    "it is evident that",
+    "undoubtedly",
+    "without question",
+    "proves that"
+  ],
   "balanced_but_empty_summary": [
     "these findings highlight",
     "this underscores the importance",

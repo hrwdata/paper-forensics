@@ -9,7 +9,7 @@ from paper_forensics.config import AuditConfig
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="paper-forensics", description="TeX-first sentence-level paper forensics.")
+    parser = argparse.ArgumentParser(prog="paper-forensics", description="TeX-first sentence-level manuscript review.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     audit_parser = subparsers.add_parser("audit", help="Audit a TeX paper.")

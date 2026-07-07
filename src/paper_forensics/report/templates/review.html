@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>paper-forensics review workspace</title>
-  <!-- Inter (brand-os primary font) — loads when online; UI falls back to system sans if offline -->
+  <!-- Inter loads when online; the UI falls back to system sans if offline. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap">
@@ -28,14 +28,14 @@
         <div class="pf-intake__hero">
           <div class="pf-intake__copy">
             <p class="pf-eyebrow">Local Review Application</p>
-            <h1>Professional review surface for manuscript forensics</h1>
+            <h1>Sentence-level manuscript review for TeX projects</h1>
             <p class="pf-muted">
               Upload a single <code>.tex</code> file or a project archive, run the existing paper-forensics pipeline,
-              and review sentence-level overlap and style-pattern signals in a structured workstation.
+              and review sentence-level overlap and AI-assisted tell signals in a structured workstation.
             </p>
             <ul class="pf-intake__notes">
               <li>Evidence-first review with stable sentence and paragraph context.</li>
-              <li>Designed for research integrity teams, editors, and internal reviewers.</li>
+              <li>Built for reviewers, editors, and research-integrity workflows.</li>
               <li>Heuristic outputs only. No definitive authorship or misconduct claims.</li>
             </ul>
           </div>
@@ -96,6 +96,11 @@
             </div>
 
             <div class="pf-panel__section">
+              <h2>AI-assisted tell overview</h2>
+              <div id="ai-tell-overview"></div>
+            </div>
+
+            <div class="pf-panel__section">
               <h2>Filters</h2>
               <div class="pf-controls">
                 <label class="pf-control">
@@ -108,13 +113,13 @@
                   <strong id="filter-plagiarism-value">0.00</strong>
                 </label>
                 <label class="pf-control">
-                  <span>AI-style threshold</span>
+                  <span>AI-assisted tell threshold</span>
                   <input id="filter-ai" type="range" min="0" max="1" step="0.05" value="0">
                   <strong id="filter-ai-value">0.00</strong>
                 </label>
                 <label class="pf-check"><input type="checkbox" id="filter-flagged"> Only flagged sentences</label>
                 <label class="pf-check"><input type="checkbox" id="filter-matches"> Only sentences with external matches</label>
-                <label class="pf-check"><input type="checkbox" id="filter-triggers"> Only sentences with style-pattern triggers</label>
+                <label class="pf-check"><input type="checkbox" id="filter-triggers"> Only sentences with AI-assisted tell triggers</label>
                 <label class="pf-control">
                   <span>Search</span>
                   <input id="filter-search" type="search" placeholder="Find text, ids, sections, or sources">
@@ -145,8 +150,8 @@
                 <div class="pf-legend__row">
                   <span class="pf-swatch pf-swatch--ai"></span>
                   <div>
-                    <strong>Estimated AI-style risk</strong>
-                    <p>Slate/violet accents indicate stronger style-pattern or rhetoric triggers.</p>
+                    <strong>Estimated AI-assisted tell risk</strong>
+                    <p>Slate/violet accents indicate stronger heuristic AI-assisted tell signals.</p>
                   </div>
                 </div>
                 <p class="pf-caveat" id="legend-caveat"></p>
@@ -191,7 +196,7 @@
                     <option value="document">Document order</option>
                     <option value="combined">Highest combined risk</option>
                     <option value="plagiarism">Highest plagiarism risk</option>
-                    <option value="ai">Highest AI-style risk</option>
+                    <option value="ai">Highest AI-assisted tell risk</option>
                   </select>
                 </label>
               </div>
@@ -222,7 +227,7 @@
             </div>
 
             <div id="inspector-empty" class="pf-empty">
-              Select a sentence in the center pane to inspect overlap evidence, style-pattern triggers, and source context.
+              Select a sentence in the center pane to inspect overlap evidence, AI-assisted tell triggers, and source context.
             </div>
 
             <div id="inspector-content" hidden>
@@ -240,7 +245,8 @@
               </div>
 
               <div class="pf-card">
-                <h3>AI-style evidence</h3>
+                <h3>AI-assisted tell evidence</h3>
+                <p class="pf-muted" id="ai-tell-summary"></p>
                 <div id="ai-features" class="pf-feature-list"></div>
               </div>
 
@@ -250,7 +256,7 @@
               </div>
 
               <div class="pf-card">
-                <h3>Phrase and style-pattern triggers</h3>
+                <h3>Phrase and tell-category triggers</h3>
                 <div class="pf-pill-list" id="triggered-phrases"></div>
                 <div class="pf-pill-list pf-pill-list--muted" id="triggered-categories"></div>
               </div>

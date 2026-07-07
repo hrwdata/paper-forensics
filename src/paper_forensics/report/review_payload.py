@@ -26,6 +26,7 @@ def build_review_payload(result: AuditResult) -> dict[str, Any]:
             "paragraph_count": len(paragraphs),
         },
         "summary": result.document_summary,
+        "ai_tell_overview": _ai_tell_overview(result.document_summary),
         "metrics": metrics,
         "rows": rows,
         "paragraphs": paragraphs,
@@ -39,10 +40,10 @@ def build_review_payload(result: AuditResult) -> dict[str, Any]:
         },
         "legend": {
             "plagiarism_label": "Estimated overlap risk",
-            "ai_label": "Estimated AI-style risk",
+            "ai_label": "Estimated AI-assisted tell risk",
             "caveat": (
-                "These scores are heuristic review aids. They are not definitive findings of authorship, plagiarism, "
-                "or misconduct."
+                "These scores are heuristic review aids. They summarize sentence-level overlap and AI-assisted tell "
+                "signals, not definitive findings of authorship, plagiarism, or misconduct."
             ),
         },
     }
@@ -96,6 +97,14 @@ def _row_payload(sentence: SentenceAudit, raw_tex_source: str, order: int) -> di
         "is_flagged": is_flagged,
         "flag_reason": _flag_reason(plagiarism, ai_risk, has_external_match, has_ai_trigger),
         "summary": _sentence_summary(payload, top_match),
+        "ai_tell_summary": payload["ai_evidence"]["finding_summary"],
+        "ai_tell_subscores": {
+            "empty_transition": round(payload["ai_evidence"]["empty_transition_score"], 3),
+            "framework_boilerplate": round(payload["ai_evidence"]["framework_boilerplate_score"], 3),
+            "unsupported_confidence": round(payload["ai_evidence"]["unsupported_confidence_score"], 3),
+            "balanced_summary": round(payload["ai_evidence"]["balanced_summary_score"], 3),
+            "low_specificity": round(payload["ai_evidence"]["low_specificity_score"], 3),
+        },
         "triggered_phrases": payload["ai_evidence"]["triggered_phrases"],
         "triggered_categories": payload["ai_evidence"]["triggered_categories"],
         "top_match": top_match,
@@ -336,15 +345,15 @@ def _risk_band(score: float) -> str:
 
 def _flag_reason(plagiarism: float, ai_risk: float, has_external_match: bool, has_ai_trigger: bool) -> str:
     if plagiarism >= 0.6 and ai_risk >= 0.6:
-        return "Review required for overlap and style-pattern signals."
+        return "Review required for overlap and AI-assisted tell signals."
     if plagiarism >= 0.6:
         return "Review required for elevated overlap evidence."
     if ai_risk >= 0.6:
-        return "Review required for elevated style-pattern signals."
+        return "Review required for elevated AI-assisted tell signals."
     if has_external_match:
         return "External match evidence is available for review."
     if has_ai_trigger:
-        return "Style-pattern triggers are available for review."
+        return "AI-assisted tell triggers are available for review."
     return "No elevated review flag."
 
 
@@ -355,11 +364,13 @@ def _sentence_summary(payload: dict[str, Any], top_match: dict[str, Any] | None)
     if plagiarism >= 0.6 and top_match:
         return f"Elevated overlap signal with strongest local match in {top_match['source_label']}."
     if ai_risk >= 0.6 and phrases:
-        return f"Elevated style-pattern signal with triggers such as {', '.join(phrases[:2])}."
+        return f"Elevated AI-assisted tell signal with triggers such as {', '.join(phrases[:2])}."
+    if payload["ai_evidence"]["finding_summary"]:
+        return f"AI-assisted tell evidence available: {payload['ai_evidence']['finding_summary']}."
     if top_match:
         return f"Overlap evidence available from {top_match['source_label']} for reviewer inspection."
     if phrases:
-        return f"Style-pattern triggers detected: {', '.join(phrases[:2])}."
+        return f"AI-assisted tell triggers detected: {', '.join(phrases[:2])}."
     return "Lower-signal sentence; review only if needed in context."
 
 
@@ -379,7 +390,25 @@ def _feature_breakdown(payload: dict[str, Any]) -> dict[str, list[dict[str, floa
             {"label": "Style shift", "value": round(ai_evidence["style_shift_score"], 3)},
             {"label": "Smoothness", "value": round(ai_evidence["smoothness_score"], 3)},
             {"label": "Heuristic classifier", "value": round(ai_evidence["heuristic_classifier_score"], 3)},
+            {"label": "Empty transition", "value": round(ai_evidence["empty_transition_score"], 3)},
+            {"label": "Framework boilerplate", "value": round(ai_evidence["framework_boilerplate_score"], 3)},
+            {"label": "Unsupported confidence", "value": round(ai_evidence["unsupported_confidence_score"], 3)},
+            {"label": "Balanced summary", "value": round(ai_evidence["balanced_summary_score"], 3)},
+            {"label": "Low specificity", "value": round(ai_evidence["low_specificity_score"], 3)},
             {"label": "Content ratio", "value": round(ai_evidence["content_ratio"], 3)},
             {"label": "Abstract word ratio", "value": round(ai_evidence["abstract_word_ratio"], 3)},
         ],
+    }
+
+
+def _ai_tell_overview(summary: dict[str, Any]) -> dict[str, Any]:
+    totals = summary.get("ai_tell_category_totals", {})
+    dominant = sorted(totals.items(), key=lambda item: (-item[1], item[0]))[:4]
+    return {
+        "category_totals": totals,
+        "dominant_categories": [
+            {"label": label.replace("_", " "), "count": count}
+            for label, count in dominant
+        ],
+        "top_findings": summary.get("top_ai_tell_findings", []),
     }
