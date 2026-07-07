@@ -24,6 +24,7 @@
     documentTitle: document.getElementById("document-title"),
     documentSubtitle: document.getElementById("document-subtitle"),
     summaryGrid: document.getElementById("summary-grid"),
+    aiTellOverview: document.getElementById("ai-tell-overview"),
     filterSection: document.getElementById("filter-section"),
     filterPlagiarism: document.getElementById("filter-plagiarism"),
     filterPlagiarismValue: document.getElementById("filter-plagiarism-value"),
@@ -52,6 +53,7 @@
     flagReason: document.getElementById("flag-reason"),
     plagiarismFeatures: document.getElementById("plagiarism-features"),
     aiFeatures: document.getElementById("ai-features"),
+    aiTellSummary: document.getElementById("ai-tell-summary"),
     matchList: document.getElementById("match-list"),
     triggeredPhrases: document.getElementById("triggered-phrases"),
     triggeredCategories: document.getElementById("triggered-categories"),
@@ -326,7 +328,7 @@
     const cards = [
       ["Flagged sentences", metrics.flagged_sentence_count],
       ["External matches", metrics.external_match_count],
-      ["Style triggers", metrics.triggered_sentence_count],
+      ["AI tell triggers", metrics.triggered_sentence_count],
       ["Suspicious spans", metrics.suspicious_span_count],
     ];
     elements.summaryGrid.innerHTML = cards
@@ -339,6 +341,44 @@
         `
       )
       .join("");
+    const overview = payload.ai_tell_overview || {};
+    const dominant = overview.dominant_categories || [];
+    const topFindings = overview.top_findings || [];
+    if (!dominant.length && !topFindings.length) {
+      elements.aiTellOverview.innerHTML = `<div class="pf-empty">No dominant AI-assisted tell categories were summarized for this document.</div>`;
+      return;
+    }
+    const dominantMarkup = dominant.length
+      ? `<div class="pf-pill-list">${dominant
+          .map(
+            (item) =>
+              `<span class="pf-pill">${escapeHtml(item.label)} (${escapeHtml(String(item.count))})</span>`
+          )
+          .join("")}</div>`
+      : `<div class="pf-empty">No dominant categories recorded.</div>`;
+    const findingMarkup = topFindings.length
+      ? topFindings
+          .slice(0, 3)
+          .map(
+            (finding) => `
+              <div class="pf-overview-item">
+                <strong>${escapeHtml(finding.sentence_id)}</strong>
+                <div class="pf-muted">${escapeHtml(finding.finding_summary || "No summary")}</div>
+              </div>
+            `
+          )
+          .join("")
+      : `<div class="pf-empty">No AI-assisted tell findings were summarized.</div>`;
+    elements.aiTellOverview.innerHTML = `
+      <div class="pf-overview-block">
+        <div class="pf-muted">Dominant categories</div>
+        ${dominantMarkup}
+      </div>
+      <div class="pf-overview-block">
+        <div class="pf-muted">Top findings</div>
+        ${findingMarkup}
+      </div>
+    `;
   }
 
   function renderOutline(payload) {
@@ -457,7 +497,7 @@
               <span class="pf-badge pf-badge--plagiarism">${escapeHtml(appConfig.plagiarism_label || "Overlap")} ${row.plagiarism_risk_score.toFixed(
       2
     )}</span>
-              <span class="pf-badge pf-badge--ai">${escapeHtml(appConfig.ai_label || "AI-style")} ${row.ai_rhetoric_risk_score.toFixed(
+              <span class="pf-badge pf-badge--ai">${escapeHtml(aiLabel())} ${row.ai_rhetoric_risk_score.toFixed(
       2
     )}</span>
               ${row.is_flagged ? `<span class="pf-badge pf-badge--flag">Review required</span>` : ""}
@@ -498,7 +538,7 @@
             </div>
             <div class="pf-badges">
               <span class="pf-badge pf-badge--plagiarism">Overlap ${paragraph.plagiarism_risk_score.toFixed(2)}</span>
-              <span class="pf-badge pf-badge--ai">AI-style ${paragraph.ai_rhetoric_risk_score.toFixed(2)}</span>
+              <span class="pf-badge pf-badge--ai">${escapeHtml(aiLabel())} ${paragraph.ai_rhetoric_risk_score.toFixed(2)}</span>
               ${paragraph.is_flagged ? `<span class="pf-badge pf-badge--flag">Review required</span>` : ""}
             </div>
           </div>
@@ -554,24 +594,27 @@
     elements.topbarStatus.textContent = `${row.sentence_id} selected`;
     elements.scorecards.innerHTML = `
       <div class="pf-scorecard pf-scorecard--plagiarism">
-        <span class="pf-muted">Estimated overlap risk</span>
+        <span class="pf-muted">${escapeHtml(plagiarismLabel())}</span>
         <strong>${row.plagiarism_risk_score.toFixed(2)}</strong>
       </div>
       <div class="pf-scorecard pf-scorecard--ai">
-        <span class="pf-muted">Estimated AI-style risk</span>
+        <span class="pf-muted">${escapeHtml(aiLabel())}</span>
         <strong>${row.ai_rhetoric_risk_score.toFixed(2)}</strong>
       </div>
     `;
     elements.inspectorSummary.textContent = row.summary;
     elements.flagReason.textContent = row.flag_reason;
     elements.plagiarismFeatures.innerHTML = featureMarkup(row.feature_breakdown.plagiarism);
+    elements.aiTellSummary.textContent = row.ai_tell_summary
+      ? `Sentence summary: ${row.ai_tell_summary}`
+      : "No AI-assisted tell summary was generated for this sentence.";
     elements.aiFeatures.innerHTML = featureMarkup(row.feature_breakdown.ai);
     elements.matchList.innerHTML = row.top_matches.length
       ? row.top_matches.map((match) => matchCard(match)).join("")
       : `<div class="pf-empty">No external matches were returned for this sentence.</div>`;
     elements.triggeredPhrases.innerHTML = row.triggered_phrases.length
       ? row.triggered_phrases.map((phrase) => `<span class="pf-pill">${escapeHtml(phrase)}</span>`).join("")
-      : `<span class="pf-pill">No style-pattern phrase triggers</span>`;
+      : `<span class="pf-pill">No AI-assisted tell phrase triggers</span>`;
     elements.triggeredCategories.innerHTML = row.triggered_categories.length
       ? row.triggered_categories.map((category) => `<span class="pf-pill">${escapeHtml(category)}</span>`).join("")
       : `<span class="pf-pill">No trigger categories</span>`;
@@ -801,6 +844,14 @@
 
   function lineLabel(start, end) {
     return start === end ? `L${start}` : `L${start}-L${end}`;
+  }
+
+  function plagiarismLabel() {
+    return (state.payload && state.payload.legend && state.payload.legend.plagiarism_label) || appConfig.plagiarism_label || "Estimated overlap risk";
+  }
+
+  function aiLabel() {
+    return (state.payload && state.payload.legend && state.payload.legend.ai_label) || appConfig.ai_label || "Estimated AI-assisted tell risk";
   }
 
   function shortName(path) {

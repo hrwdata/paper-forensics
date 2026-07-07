@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "paper-forensics"
 version = "0.1.0"
-description = "TeX-first paper forensics workbench for sentence-level plagiarism risk and AI-rhetoric risk."
+description = "TeX-first manuscript review workbench for sentence-level overlap and AI-assisted tell evidence."
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [

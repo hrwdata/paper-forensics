@@ -65,6 +65,12 @@ class AIRhetoricEvidence:
     heuristic_classifier_score: float
     content_ratio: float
     abstract_word_ratio: float
+    empty_transition_score: float
+    framework_boilerplate_score: float
+    unsupported_confidence_score: float
+    balanced_summary_score: float
+    low_specificity_score: float
+    finding_summary: str
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

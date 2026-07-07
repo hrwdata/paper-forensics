@@ -4,7 +4,7 @@ setlocal
 set "ROOT=%~dp0"
 cd /d "%ROOT%"
 
-rem Try pythonw first (Anaconda / direct binary — most reliable on this machine)
+rem Try pythonw first so the launcher stays windowed when available
 where pythonw >nul 2>nul
 if %errorlevel%==0 (
   start "" pythonw "%ROOT%launch_paper_forensics.pyw"
@@ -32,5 +32,5 @@ if %errorlevel%==0 (
 )
 
 echo paper-forensics could not find pythonw.exe, pyw.exe, py.exe, or python.exe.
-echo Please install Python for Windows (python.org) or Anaconda.
+echo Please install Python for Windows (python.org) or another supported distribution.
 pause

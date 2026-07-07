@@ -1,5 +1,5 @@
 :root {
-  /* ── Brand OS foundation tokens (brand-os v0.1.0) ───────────────────── */
+  /* Shared review workspace tokens. */
   --page: #F7F6F2;                        /* backgroundCanvas   */
   --panel: #FFFFFF;                       /* backgroundElevated */
   --panel-muted: #f5f5f1;
@@ -22,8 +22,8 @@
   --radius: 16px;
   --radius-sm: 12px;
   --mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
-  --sans: "Inter", ui-sans-serif, system-ui, sans-serif;  /* brand-os primary  */
-  --serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;  /* brand-os secondary */
+  --sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
 }
 
 * {
@@ -359,6 +359,14 @@ code, kbd {
   flex-wrap: wrap;
   color: var(--muted);
   font-size: 0.84rem;
+}
+
+.pf-overview-block + .pf-overview-block {
+  margin-top: 14px;
+}
+
+.pf-overview-item + .pf-overview-item {
+  margin-top: 10px;
 }
 
 kbd {

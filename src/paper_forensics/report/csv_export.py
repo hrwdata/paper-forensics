@@ -18,6 +18,8 @@ def write_csv(result: AuditResult, path: Path) -> None:
                 "plagiarism_risk_score",
                 "ai_rhetoric_risk_score",
                 "triggered_phrases",
+                "triggered_categories",
+                "finding_summary",
                 "top_match_label",
                 "top_match_text",
             ],
@@ -34,6 +36,8 @@ def write_csv(result: AuditResult, path: Path) -> None:
                     "plagiarism_risk_score": round(sentence.plagiarism_risk_score, 4),
                     "ai_rhetoric_risk_score": round(sentence.ai_rhetoric_risk_score, 4),
                     "triggered_phrases": "; ".join(sentence.ai_evidence.triggered_phrases),
+                    "triggered_categories": "; ".join(sentence.ai_evidence.triggered_categories),
+                    "finding_summary": sentence.ai_evidence.finding_summary,
                     "top_match_label": top_match.source_label if top_match else "",
                     "top_match_text": top_match.matched_text if top_match else "",
                 }
