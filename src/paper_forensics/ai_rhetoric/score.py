@@ -3,11 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from paper_forensics.ai_rhetoric.classifier import heuristic_classifier_score
-from paper_forensics.ai_rhetoric.phrase_rules import load_phrase_rules, match_phrase_details, match_phrases
+from paper_forensics.ai_rhetoric.phrase_rules import load_phrase_rules, match_phrase_details
 from paper_forensics.ai_rhetoric.style_shift import smoothness_score, style_shift_score
 from paper_forensics.config import AuditConfig
 from paper_forensics.nlp.token_features import abstract_word_ratio, content_ratio, starts_with_discourse_marker, tokenize
 from paper_forensics.scoring.schemas import AIRhetoricEvidence, SentenceRecord
+
+FINDING_SUMMARY_THRESHOLD = 0.25
+CANONICAL_TRIGGER_CATEGORIES = {
+    "balanced_but_empty_summary": "balanced_summary",
+    "empty_transition": "empty_transition",
+    "framework_boilerplate": "framework_boilerplate",
+    "novelty_inflation": "unsupported_confidence",
+    "unsupported_confidence": "unsupported_confidence",
+}
 
 LOW_SPECIFICITY_TOKENS = {
     "approach",
@@ -43,7 +52,8 @@ class AIRhetoricScorer:
 
     def score_sentence(self, sentence: SentenceRecord, neighbors: list[SentenceRecord]) -> tuple[float, AIRhetoricEvidence]:
         matched_details = match_phrase_details(sentence.clean_text, self.rules)
-        triggered_phrases, triggered_categories = match_phrases(sentence.clean_text, self.rules)
+        triggered_phrases = _matched_phrases(matched_details)
+        triggered_categories = _canonical_trigger_categories(matched_details)
         empty_transition = _category_phrase_score(matched_details, "empty_transition")
         framework_boilerplate = _category_phrase_score(matched_details, "framework_boilerplate")
         unsupported_confidence = max(
@@ -124,9 +134,22 @@ def _category_phrase_score(details: dict[str, list[str]], category: str) -> floa
     return min(1.0, len(details.get(category, ())) / 2.0)
 
 
+def _matched_phrases(details: dict[str, list[str]]) -> list[str]:
+    return sorted({phrase for matched in details.values() for phrase in matched})
+
+
+def _canonical_trigger_categories(details: dict[str, list[str]]) -> list[str]:
+    categories = {
+        CANONICAL_TRIGGER_CATEGORIES.get(category, category)
+        for category, matched in details.items()
+        if matched
+    }
+    return sorted(categories)
+
+
 def build_finding_summary(category_scores: dict[str, float]) -> str:
     ranked = sorted(category_scores.items(), key=lambda item: (-item[1], item[0]))
-    visible = [(label, score) for label, score in ranked if score >= 0.25]
+    visible = [(label, score) for label, score in ranked if score >= FINDING_SUMMARY_THRESHOLD]
     if not visible and ranked and ranked[0][1] > 0:
         visible = [ranked[0]]
     return "|".join(f"{label}={score:.2f}" for label, score in visible)

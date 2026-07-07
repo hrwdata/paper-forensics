@@ -22,7 +22,7 @@
       "plagiarism_risk_score": 0.5242899191008171,
       "ai_rhetoric_risk_score": 0.18766802989309606,
       "plagiarism_evidence": {
-        "vector_similarity_score": 0.46901027774037785,
+        "vector_similarity_score": 0.46901027774037796,
         "lexical_overlap_score": 0.35294117647058826,
         "rare_phrase_overlap_score": 0.9,
         "boilerplate_discount": 0.0,
@@ -31,7 +31,7 @@
             "source_path": "examples\\corpus\\similar_paper.txt",
             "source_label": "similar_paper",
             "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.",
-            "vector_similarity": 0.46901027774037785,
+            "vector_similarity": 0.46901027774037796,
             "lexical_overlap": 0.35294117647058826,
             "rare_phrase_overlap": 0.9,
             "overlapping_phrases": [
@@ -117,7 +117,7 @@
               "it is important to note",
               "important to note that",
               "is important to note",
-              "a robust framework"
+              "it is important to"
             ]
           },
           {
@@ -282,7 +282,7 @@
             "source_path": "examples\\corpus\\boilerplate_note.txt",
             "source_label": "boilerplate_note",
             "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
-            "vector_similarity": 0.0662381731869356,
+            "vector_similarity": 0.06623817318693559,
             "lexical_overlap": 0.09090909090909091,
             "rare_phrase_overlap": 0.0,
             "overlapping_phrases": []
@@ -303,7 +303,7 @@
           "the results demonstrate that"
         ],
         "triggered_categories": [
-          "balanced_but_empty_summary"
+          "balanced_summary"
         ],
         "phrase_pattern_score": 0.3333333333333333,
         "semantic_thinness_score": 0.08074999999999999,
@@ -428,8 +428,8 @@
             "rare_phrase_overlap": 0.9,
             "overlapping_phrases": [
               "similarity against candidate source passages",
-              "proposed pipeline computes lexical overlap",
               "vector similarity against candidate source",
+              "proposed pipeline computes lexical overlap",
               "pipeline computes lexical overlap phrase",
               "computes lexical overlap phrase overlap"
             ]
@@ -568,7 +568,7 @@
       "plagiarism_risk_score": 0.3854255663101094,
       "ai_rhetoric_risk_score": 0.2917448157950954,
       "plagiarism_evidence": {
-        "vector_similarity_score": 0.23572831160700639,
+        "vector_similarity_score": 0.23572831160700636,
         "lexical_overlap_score": 0.21739130434782608,
         "rare_phrase_overlap_score": 0.9,
         "boilerplate_discount": 0.0,
@@ -577,13 +577,13 @@
             "source_path": "examples\\corpus\\boilerplate_note.txt",
             "source_label": "boilerplate_note",
             "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.",
-            "vector_similarity": 0.23572831160700639,
+            "vector_similarity": 0.23572831160700636,
             "lexical_overlap": 0.21739130434782608,
             "rare_phrase_overlap": 0.9,
             "overlapping_phrases": [
               "this highlights the fact that",
-              "this highlights the fact",
               "highlights the fact that",
+              "this highlights the fact",
               "this highlights the",
               "highlights the fact"
             ]
@@ -592,7 +592,7 @@
             "source_path": "examples\\corpus\\boilerplate_note.txt",
             "source_label": "boilerplate_note",
             "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.",
-            "vector_similarity": 0.04896762356290806,
+            "vector_similarity": 0.04896762356290807,
             "lexical_overlap": 0.09090909090909091,
             "rare_phrase_overlap": 0.0,
             "overlapping_phrases": []
@@ -613,7 +613,7 @@
           "this highlights the fact that"
         ],
         "triggered_categories": [
-          "balanced_but_empty_summary"
+          "balanced_summary"
         ],
         "phrase_pattern_score": 0.3333333333333333,
         "semantic_thinness_score": 0.16678571428571426,
@@ -744,7 +744,7 @@
         "score": 0.2917448157950954,
         "finding_summary": "balanced_summary=0.50",
         "triggered_categories": [
-          "balanced_but_empty_summary"
+          "balanced_summary"
         ]
       },
       {
@@ -754,7 +754,7 @@
         "score": 0.25380195567365793,
         "finding_summary": "balanced_summary=0.50",
         "triggered_categories": [
-          "balanced_but_empty_summary"
+          "balanced_summary"
         ]
       },
       {

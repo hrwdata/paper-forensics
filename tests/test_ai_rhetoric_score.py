@@ -17,6 +17,7 @@ def test_ai_rhetoric_score_flags_boilerplate_phrases() -> None:
     score, evidence = scorer.score_sentence(target, neighbors)
     assert score > 0.35
     assert "it is important to note" in evidence.triggered_phrases
+    assert evidence.triggered_categories == ["empty_transition", "framework_boilerplate"]
     assert evidence.semantic_thinness_score > 0.2
     assert evidence.framework_boilerplate_score >= 0.5
     assert evidence.low_specificity_score > 0.2
@@ -29,8 +30,19 @@ def test_ai_rhetoric_score_flags_unsupported_confidence_language() -> None:
     score, evidence = scorer.score_sentence(sentence, [])
 
     assert score > 0.2
+    assert evidence.triggered_categories == ["unsupported_confidence"]
     assert evidence.unsupported_confidence_score >= 0.5
     assert "unsupported_confidence" in evidence.finding_summary
+
+
+def test_ai_rhetoric_score_canonicalizes_balanced_summary_category() -> None:
+    scorer = AIRhetoricScorer(config=AuditConfig())
+    sentence = _sentence("The results demonstrate that local evidence is easier to inspect than a single label.")
+    _, evidence = scorer.score_sentence(sentence, [])
+
+    assert evidence.triggered_categories == ["balanced_summary"]
+    assert evidence.triggered_phrases == ["the results demonstrate that"]
+    assert "balanced_summary" in evidence.finding_summary
 
 
 def test_ai_rhetoric_score_keeps_specific_sentence_low_signal() -> None:

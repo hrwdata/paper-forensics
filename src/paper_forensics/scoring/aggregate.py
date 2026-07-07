@@ -4,6 +4,8 @@ from collections import Counter, defaultdict
 
 from paper_forensics.scoring.schemas import AggregateScore, SentenceAudit
 
+AI_TELL_CATEGORY_THRESHOLD = 0.25
+
 
 def aggregate_by_paragraph(sentences: list[SentenceAudit]) -> list[AggregateScore]:
     grouped: dict[str, list[SentenceAudit]] = defaultdict(list)
@@ -83,15 +85,15 @@ def _ai_tell_category_totals(items: list[SentenceAudit]) -> Counter[str]:
     totals: Counter[str] = Counter()
     for item in items:
         evidence = item.ai_evidence
-        if evidence.empty_transition_score >= 0.25:
+        if evidence.empty_transition_score >= AI_TELL_CATEGORY_THRESHOLD:
             totals["empty_transition"] += 1
-        if evidence.framework_boilerplate_score >= 0.25:
+        if evidence.framework_boilerplate_score >= AI_TELL_CATEGORY_THRESHOLD:
             totals["framework_boilerplate"] += 1
-        if evidence.unsupported_confidence_score >= 0.25:
+        if evidence.unsupported_confidence_score >= AI_TELL_CATEGORY_THRESHOLD:
             totals["unsupported_confidence"] += 1
-        if evidence.balanced_summary_score >= 0.25:
+        if evidence.balanced_summary_score >= AI_TELL_CATEGORY_THRESHOLD:
             totals["balanced_summary"] += 1
-        if evidence.low_specificity_score >= 0.35:
+        if evidence.low_specificity_score >= AI_TELL_CATEGORY_THRESHOLD:
             totals["low_specificity"] += 1
     return totals
 
