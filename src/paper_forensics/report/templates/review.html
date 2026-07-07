@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>paper-forensics review workspace</title>
+  <!-- Inter loads when online; the UI falls back to system sans if offline. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap">
+  <style>{{ review_css | safe }}</style>
+</head>
+<body data-app-mode="{{ 'true' if app_mode else 'false' }}">
+  <div id="app-root" class="pf-app">
+    <header class="pf-topbar">
+      <div class="pf-topbar__brand">
+        <div class="pf-brand-mark">PF</div>
+        <div>
+          <strong>paper-forensics</strong>
+          <span>Academic document review workspace</span>
+        </div>
+      </div>
+      <div class="pf-topbar__status" id="topbar-status">Review workspace</div>
+    </header>
+
+    <main class="pf-main">
+      <section class="pf-intake" id="intake-view" hidden>
+        <div class="pf-intake__hero">
+          <div class="pf-intake__copy">
+            <p class="pf-eyebrow">Local Review Application</p>
+            <h1>Sentence-level manuscript review for TeX projects</h1>
+            <p class="pf-muted">
+              Upload a single <code>.tex</code> file or a project archive, run the existing paper-forensics pipeline,
+              and review sentence-level overlap and AI-assisted tell signals in a structured workstation.
+            </p>
+            <ul class="pf-intake__notes">
+              <li>Evidence-first review with stable sentence and paragraph context.</li>
+              <li>Built for reviewers, editors, and research-integrity workflows.</li>
+              <li>Heuristic outputs only. No definitive authorship or misconduct claims.</li>
+            </ul>
+          </div>
+          <div class="pf-intake__panel">
+            <div class="pf-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload TeX file or archive">
+              <input id="upload-input" type="file" accept=".tex,.zip,.tar,.gz,.tgz,.tar.gz" hidden>
+              <div class="pf-dropzone__title">Attach TeX manuscript or project archive</div>
+              <div class="pf-dropzone__subtitle">Drag and drop, or choose a file to analyze locally.</div>
+              <button type="button" class="pf-button pf-button--primary" id="choose-file">Choose File</button>
+            </div>
+            <div class="pf-upload-summary" id="upload-summary">
+              <div class="pf-empty">No file selected yet.</div>
+            </div>
+            <div class="pf-intake__actions">
+              <button type="button" class="pf-button pf-button--primary" id="analyze-button" disabled>Analyze</button>
+              <div class="pf-helper" id="corpus-label"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pf-loading" id="loading-view" hidden>
+        <div class="pf-loading__panel">
+          <div class="pf-loading__spinner" aria-hidden="true"></div>
+          <h2>Analyzing manuscript</h2>
+          <p class="pf-muted" id="loading-message">Preparing upload…</p>
+          <div class="pf-progress">
+            <span id="loading-progress" style="width: 10%;"></span>
+          </div>
+          <ol class="pf-loading__steps" id="loading-steps">
+            <li class="is-active">Preparing upload</li>
+            <li>Resolving TeX project</li>
+            <li>Running sentence audit</li>
+            <li>Finalizing review artifacts</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="pf-error" id="error-view" hidden>
+        <div class="pf-error__panel">
+          <h2>Unable to complete analysis</h2>
+          <p class="pf-muted" id="error-message"></p>
+          <button type="button" class="pf-button pf-button--secondary" id="error-reset">Start another review</button>
+        </div>
+      </section>
+
+      <section class="pf-workspace" id="workspace-view" hidden>
+        <aside class="pf-sidebar" id="left-pane">
+          <div class="pf-panel pf-panel--sticky">
+            <div class="pf-panel__section">
+              <p class="pf-eyebrow">Document</p>
+              <h1 class="pf-document-title" id="document-title">Review</h1>
+              <p class="pf-muted" id="document-subtitle"></p>
+            </div>
+
+            <div class="pf-panel__section">
+              <div class="pf-summary-grid" id="summary-grid"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>AI-assisted tell overview</h2>
+              <div id="ai-tell-overview"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Filters</h2>
+              <div class="pf-controls">
+                <label class="pf-control">
+                  <span>Section</span>
+                  <select id="filter-section"></select>
+                </label>
+                <label class="pf-control">
+                  <span>Plagiarism threshold</span>
+                  <input id="filter-plagiarism" type="range" min="0" max="1" step="0.05" value="0">
+                  <strong id="filter-plagiarism-value">0.00</strong>
+                </label>
+                <label class="pf-control">
+                  <span>AI-assisted tell threshold</span>
+                  <input id="filter-ai" type="range" min="0" max="1" step="0.05" value="0">
+                  <strong id="filter-ai-value">0.00</strong>
+                </label>
+                <label class="pf-check"><input type="checkbox" id="filter-flagged"> Only flagged sentences</label>
+                <label class="pf-check"><input type="checkbox" id="filter-matches"> Only sentences with external matches</label>
+                <label class="pf-check"><input type="checkbox" id="filter-triggers"> Only sentences with AI-assisted tell triggers</label>
+                <label class="pf-control">
+                  <span>Search</span>
+                  <input id="filter-search" type="search" placeholder="Find text, ids, sections, or sources">
+                </label>
+              </div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Suspicious spans</h2>
+              <div id="span-navigator" class="pf-nav-list"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Outline</h2>
+              <div id="outline-nav" class="pf-nav-list"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Scoring legend</h2>
+              <div class="pf-legend">
+                <div class="pf-legend__row">
+                  <span class="pf-swatch pf-swatch--plagiarism"></span>
+                  <div>
+                    <strong>Estimated overlap risk</strong>
+                    <p>Amber/red accents indicate stronger overlap evidence requiring review.</p>
+                  </div>
+                </div>
+                <div class="pf-legend__row">
+                  <span class="pf-swatch pf-swatch--ai"></span>
+                  <div>
+                    <strong>Estimated AI-assisted tell risk</strong>
+                    <p>Slate/violet accents indicate stronger heuristic AI-assisted tell signals.</p>
+                  </div>
+                </div>
+                <p class="pf-caveat" id="legend-caveat"></p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="pf-document-pane">
+          <div class="pf-panel pf-panel--document">
+            <div class="pf-panel__header">
+              <div>
+                <p class="pf-eyebrow">Document Review</p>
+                <h2>Primary manuscript viewer</h2>
+                <p class="pf-muted">Review the document in order, then jump directly into evidence on the right.</p>
+              </div>
+              <div class="pf-toolbar">
+                <label class="pf-toolbar__group">
+                  <span>View</span>
+                  <select id="view-mode">
+                    <option value="sentence">Sentence view</option>
+                    <option value="paragraph">Paragraph view</option>
+                  </select>
+                </label>
+                <label class="pf-toolbar__group">
+                  <span>Text</span>
+                  <select id="text-mode">
+                    <option value="clean">Clean text</option>
+                    <option value="raw">Raw TeX context</option>
+                  </select>
+                </label>
+                <label class="pf-toolbar__group">
+                  <span>Density</span>
+                  <select id="density-mode">
+                    <option value="comfortable">Comfortable</option>
+                    <option value="compact">Compact</option>
+                  </select>
+                </label>
+                <label class="pf-toolbar__group">
+                  <span>Order</span>
+                  <select id="sort-mode">
+                    <option value="document">Document order</option>
+                    <option value="combined">Highest combined risk</option>
+                    <option value="plagiarism">Highest plagiarism risk</option>
+                    <option value="ai">Highest AI-assisted tell risk</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="pf-panel__subheader">
+              <div id="result-count" class="pf-muted">0 sentences</div>
+              <div class="pf-shortcuts">
+                <span><kbd>↑</kbd><kbd>↓</kbd> move</span>
+                <span><kbd>Shift</kbd><kbd>↑</kbd>/<kbd>↓</kbd> flagged</span>
+                <span><kbd>Alt</kbd><kbd>↑</kbd>/<kbd>↓</kbd> suspicious span</span>
+              </div>
+            </div>
+
+            <div class="pf-document-list" id="document-list"></div>
+          </div>
+        </section>
+
+        <aside class="pf-inspector-pane">
+          <div class="pf-panel pf-panel--sticky">
+            <div class="pf-panel__header">
+              <div>
+                <p class="pf-eyebrow">Inspector</p>
+                <h2 id="inspector-title">Select a sentence</h2>
+                <p class="pf-muted" id="inspector-location">Sentence-level evidence appears here.</p>
+              </div>
+              <div class="pf-export" id="export-actions"></div>
+            </div>
+
+            <div id="inspector-empty" class="pf-empty">
+              Select a sentence in the center pane to inspect overlap evidence, AI-assisted tell triggers, and source context.
+            </div>
+
+            <div id="inspector-content" hidden>
+              <div class="pf-scorecards" id="scorecards"></div>
+
+              <div class="pf-card">
+                <h3>Reviewer summary</h3>
+                <p class="pf-muted" id="inspector-summary"></p>
+                <div class="pf-flag-reason" id="flag-reason"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Overlap evidence</h3>
+                <div id="plagiarism-features" class="pf-feature-list"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>AI-assisted tell evidence</h3>
+                <p class="pf-muted" id="ai-tell-summary"></p>
+                <div id="ai-features" class="pf-feature-list"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Matched literature excerpts</h3>
+                <div id="match-list" class="pf-match-list"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Phrase and tell-category triggers</h3>
+                <div class="pf-pill-list" id="triggered-phrases"></div>
+                <div class="pf-pill-list pf-pill-list--muted" id="triggered-categories"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Source context</h3>
+                <div class="pf-codeblock" id="source-context"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Scoring note</h3>
+                <p class="pf-muted" id="scoring-note"></p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    window.__PF_INITIAL_PAYLOAD__ = {{ initial_payload_json | safe }};
+    window.__PF_APP_CONFIG__ = {{ app_config_json | safe }};
+  </script>
+  <script>{{ review_js | safe }}</script>
+</body>
+</html>

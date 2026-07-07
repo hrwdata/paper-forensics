@@ -1,0 +1,2100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>paper-forensics review workspace</title>
+  <!-- Inter loads when online; the UI falls back to system sans if offline. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap">
+  <style>:root {
+  /* Shared review workspace tokens. */
+  --page: #F7F6F2;                        /* backgroundCanvas   */
+  --panel: #FFFFFF;                       /* backgroundElevated */
+  --panel-muted: #f5f5f1;
+  --line: #D8DEE8;                        /* borderSubtle       */
+  --line-strong: #c4cad6;
+  --ink: #14171D;                         /* textPrimary        */
+  --muted: #4C5563;                       /* textSecondary      */
+  --slate: #3E4C5E;
+  --accent: #345C8A;                      /* accentPrimary      */
+  --accent-soft: rgba(52, 92, 138, 0.08);
+  --amber-strong: #9A6A2A;               /* warning            */
+  --amber-soft: rgba(154, 106, 42, 0.11);
+  --amber-border: rgba(154, 106, 42, 0.24);
+  --violet-strong: #5d4d91;
+  --violet-soft: rgba(93, 77, 145, 0.11);
+  --violet-border: rgba(93, 77, 145, 0.24);
+  --high-bg: #fff4ef;
+  --medium-bg: #fffaf4;
+  --shadow: 0 18px 40px rgba(20, 23, 29, 0.06);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top right, rgba(52, 92, 138, 0.06), transparent 26%),
+    linear-gradient(180deg, #F7F6F2, #F0F1EF 42%, #E9EAEB);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+body {
+  line-height: 1.45;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+code, kbd {
+  font-family: var(--mono);
+}
+
+.pf-app {
+  min-height: 100vh;
+}
+
+.pf-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(217, 222, 232, 0.86);
+  background: rgba(247, 246, 242, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.pf-topbar__brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.pf-topbar__brand strong {
+  display: block;
+  font-size: 0.98rem;
+}
+
+.pf-topbar__brand span,
+.pf-topbar__status {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.pf-brand-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1E3448, #345C8A);
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.pf-main {
+  padding: 18px;
+}
+
+.pf-intake,
+.pf-loading,
+.pf-error {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.pf-intake__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.pf-intake__copy,
+.pf-intake__panel,
+.pf-loading__panel,
+.pf-error__panel,
+.pf-panel {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(217, 222, 232, 0.96);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.pf-intake__copy,
+.pf-intake__panel,
+.pf-loading__panel,
+.pf-error__panel {
+  padding: 28px;
+}
+
+.pf-intake__copy h1 {
+  margin: 0;
+  font-size: 2.25rem;
+  line-height: 1.15;
+  font-family: var(--serif);
+}
+
+.pf-muted {
+  color: var(--muted);
+}
+
+.pf-eyebrow {
+  margin: 0 0 10px;
+  font-size: 0.79rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.pf-intake__notes {
+  margin: 22px 0 0;
+  padding-left: 18px;
+  color: var(--slate);
+}
+
+.pf-dropzone {
+  border: 1px dashed #9fb1ca;
+  border-radius: 16px;
+  padding: 26px;
+  background: linear-gradient(180deg, #fbfcff, #f5f8fc);
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  transition: border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.pf-dropzone:hover,
+.pf-dropzone:focus-visible,
+.pf-dropzone.is-dragging {
+  border-color: var(--accent);
+  background: #f4f5f0;
+  box-shadow: 0 0 0 3px rgba(52, 92, 138, 0.08);
+  outline: none;
+}
+
+.pf-dropzone__title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.pf-dropzone__subtitle {
+  color: var(--muted);
+}
+
+.pf-upload-summary {
+  min-height: 96px;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-muted);
+}
+
+.pf-intake__actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.pf-button {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: white;
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.pf-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.pf-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pf-button--primary {
+  background: linear-gradient(180deg, #345C8A, #27496C);
+  border-color: #27496C;
+  color: white;
+}
+
+.pf-button--secondary {
+  background: var(--panel-muted);
+}
+
+.pf-helper {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.pf-loading__panel,
+.pf-error__panel {
+  max-width: 760px;
+  margin: 80px auto;
+  text-align: center;
+}
+
+.pf-loading__spinner {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  border: 3px solid rgba(52, 92, 138, 0.18);
+  border-top-color: #345C8A;
+  animation: spin 1s linear infinite;
+}
+
+.pf-progress {
+  margin-top: 16px;
+  height: 10px;
+  border-radius: 999px;
+  background: #e4e9f1;
+  overflow: hidden;
+}
+
+.pf-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #345C8A, #6088B4);
+  border-radius: 999px;
+  transition: width 180ms ease;
+}
+
+.pf-loading__steps {
+  margin: 20px auto 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  max-width: 420px;
+  text-align: left;
+}
+
+.pf-loading__steps li {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--panel-muted);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.pf-loading__steps li.is-active {
+  border-color: rgba(52, 92, 138, 0.28);
+  background: rgba(52, 92, 138, 0.07);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.pf-workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1.4fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+
+.pf-panel {
+  padding: 18px;
+}
+
+.pf-panel--sticky {
+  position: sticky;
+  top: 72px;
+  max-height: calc(100vh - 90px);
+  overflow: auto;
+}
+
+.pf-panel--document {
+  min-height: calc(100vh - 110px);
+}
+
+.pf-panel__section + .pf-panel__section,
+.pf-card + .pf-card {
+  margin-top: 18px;
+}
+
+.pf-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.pf-panel__header h2,
+.pf-panel__section h2,
+.pf-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.pf-panel__subheader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pf-shortcuts {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.pf-overview-block + .pf-overview-block {
+  margin-top: 14px;
+}
+
+.pf-overview-item + .pf-overview-item {
+  margin-top: 10px;
+}
+
+kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  margin-right: 4px;
+  padding: 0 6px;
+  border: 1px solid #cfd6e1;
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: white;
+  color: var(--slate);
+  font-size: 0.78rem;
+}
+
+.pf-document-title {
+  margin: 0;
+  font-size: 1.55rem;
+  font-family: var(--serif);
+}
+
+.pf-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pf-summary-card {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-muted);
+}
+
+.pf-summary-card strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.35rem;
+  font-family: var(--serif);
+}
+
+.pf-controls {
+  display: grid;
+  gap: 12px;
+}
+
+.pf-control {
+  display: grid;
+  gap: 6px;
+}
+
+.pf-control span {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.pf-control input[type="search"],
+.pf-control select,
+.pf-toolbar__group select {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: white;
+  padding: 9px 10px;
+  color: var(--ink);
+}
+
+.pf-control input[type="range"] {
+  width: 100%;
+  accent-color: #345C8A;
+}
+
+.pf-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--slate);
+}
+
+.pf-nav-list {
+  display: grid;
+  gap: 8px;
+}
+
+.pf-nav-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-muted);
+  cursor: pointer;
+}
+
+.pf-nav-item:hover,
+.pf-nav-item:focus-visible,
+.pf-nav-item.is-active {
+  border-color: rgba(52, 92, 138, 0.24);
+  background: rgba(52, 92, 138, 0.06);
+  outline: none;
+}
+
+.pf-nav-item__meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.pf-legend {
+  display: grid;
+  gap: 14px;
+}
+
+.pf-legend__row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.pf-legend__row p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pf-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.pf-swatch--plagiarism {
+  background: linear-gradient(180deg, #b8641d, #904112);
+}
+
+.pf-swatch--ai {
+  background: linear-gradient(180deg, #655399, #4e447b);
+}
+
+.pf-caveat {
+  margin: 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fbfcff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pf-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+.pf-toolbar__group {
+  display: grid;
+  gap: 6px;
+  min-width: 128px;
+}
+
+.pf-toolbar__group span {
+  font-size: 0.76rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.pf-document-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+}
+
+.pf-group h3 {
+  margin: 0 0 10px;
+  color: var(--slate);
+  font-size: 0.96rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pf-row,
+.pf-paragraph {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: white;
+  transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.pf-row:hover,
+.pf-paragraph:hover {
+  border-color: rgba(52, 92, 138, 0.24);
+  box-shadow: 0 12px 24px rgba(20, 23, 29, 0.05);
+}
+
+.pf-row.is-active,
+.pf-paragraph.is-active {
+  border-color: #345C8A;
+  box-shadow: 0 0 0 3px rgba(52, 92, 138, 0.09);
+}
+
+.pf-row.is-hovered,
+.pf-paragraph.is-hovered {
+  background: #fbfcff;
+}
+
+.pf-row__body,
+.pf-paragraph__body {
+  padding: 14px 16px;
+}
+
+.pf-row__meta,
+.pf-paragraph__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.pf-row__identity strong,
+.pf-paragraph__identity strong {
+  display: block;
+  font-size: 0.94rem;
+  color: var(--slate);
+}
+
+.pf-row__identity span,
+.pf-paragraph__identity span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.84rem;
+  margin-top: 2px;
+}
+
+.pf-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+.pf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.pf-badge--plagiarism {
+  color: var(--amber-strong);
+  background: var(--amber-soft);
+  border-color: var(--amber-border);
+}
+
+.pf-badge--ai {
+  color: var(--violet-strong);
+  background: var(--violet-soft);
+  border-color: var(--violet-border);
+}
+
+.pf-badge--flag {
+  color: #7d3310;
+  background: rgba(177, 67, 20, 0.08);
+  border-color: rgba(177, 67, 20, 0.2);
+}
+
+.pf-row__text,
+.pf-paragraph__text {
+  font-size: 1rem;
+  line-height: 1.62;
+  white-space: pre-wrap;
+}
+
+.pf-row__summary,
+.pf-paragraph__summary {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.pf-row__footer,
+.pf-paragraph__footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pf-pill-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pf-pill-list--muted .pf-pill {
+  background: #f3f6fb;
+  color: var(--slate);
+}
+
+.pf-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(52, 92, 138, 0.08);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pf-paragraph__sentences {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pf-paragraph__sentence {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-muted);
+  cursor: pointer;
+}
+
+.pf-paragraph__sentence.is-active {
+  border-color: #345C8A;
+  background: rgba(52, 92, 138, 0.08);
+}
+
+.pf-empty {
+  padding: 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  background: #fbfcfe;
+  color: var(--muted);
+}
+
+.pf-inspector-pane .pf-panel--sticky {
+  padding-bottom: 26px;
+}
+
+.pf-scorecards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pf-scorecard {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--panel-muted);
+}
+
+.pf-scorecard--plagiarism {
+  border-color: var(--amber-border);
+  background: linear-gradient(180deg, rgba(158, 79, 18, 0.08), rgba(158, 79, 18, 0.03));
+}
+
+.pf-scorecard--ai {
+  border-color: var(--violet-border);
+  background: linear-gradient(180deg, rgba(93, 77, 145, 0.08), rgba(93, 77, 145, 0.03));
+}
+
+.pf-scorecard strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.4rem;
+  font-family: var(--serif);
+}
+
+.pf-card {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--panel-muted);
+}
+
+.pf-card h3 {
+  margin-bottom: 10px;
+}
+
+.pf-flag-reason {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fcfdff;
+  border: 1px solid var(--line);
+  color: var(--slate);
+}
+
+.pf-feature-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pf-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 46px;
+  gap: 10px;
+  align-items: center;
+}
+
+.pf-feature__bar {
+  margin-top: 4px;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e6ebf3;
+}
+
+.pf-feature__bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #54779b, #315982);
+}
+
+.pf-match-list {
+  display: grid;
+  gap: 10px;
+}
+
+.pf-match {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: white;
+}
+
+.pf-match__meta {
+  color: var(--muted);
+  font-size: 0.84rem;
+  margin-top: 4px;
+}
+
+.pf-snippet,
+.pf-codeblock {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: white;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pf-codeblock {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.pf-export {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: end;
+}
+
+.pf-export a {
+  text-decoration: none;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.pf-document-list[data-density="compact"] .pf-row__body,
+.pf-document-list[data-density="compact"] .pf-paragraph__body {
+  padding: 11px 12px;
+}
+
+.pf-document-list[data-density="compact"] .pf-row__text,
+.pf-document-list[data-density="compact"] .pf-paragraph__text {
+  font-size: 0.93rem;
+  line-height: 1.48;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1320px) {
+  .pf-workspace {
+    grid-template-columns: 280px minmax(0, 1fr) 330px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .pf-workspace,
+  .pf-intake__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-panel--sticky {
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .pf-main {
+    padding: 12px;
+  }
+
+  .pf-topbar {
+    padding: 12px 14px;
+  }
+
+  .pf-panel__header,
+  .pf-panel__subheader,
+  .pf-intake__actions {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .pf-summary-grid,
+  .pf-scorecards {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-toolbar {
+    justify-content: start;
+  }
+}
+</style>
+</head>
+<body data-app-mode="false">
+  <div id="app-root" class="pf-app">
+    <header class="pf-topbar">
+      <div class="pf-topbar__brand">
+        <div class="pf-brand-mark">PF</div>
+        <div>
+          <strong>paper-forensics</strong>
+          <span>Academic document review workspace</span>
+        </div>
+      </div>
+      <div class="pf-topbar__status" id="topbar-status">Review workspace</div>
+    </header>
+
+    <main class="pf-main">
+      <section class="pf-intake" id="intake-view" hidden>
+        <div class="pf-intake__hero">
+          <div class="pf-intake__copy">
+            <p class="pf-eyebrow">Local Review Application</p>
+            <h1>Sentence-level manuscript review for TeX projects</h1>
+            <p class="pf-muted">
+              Upload a single <code>.tex</code> file or a project archive, run the existing paper-forensics pipeline,
+              and review sentence-level overlap and AI-assisted tell signals in a structured workstation.
+            </p>
+            <ul class="pf-intake__notes">
+              <li>Evidence-first review with stable sentence and paragraph context.</li>
+              <li>Built for reviewers, editors, and research-integrity workflows.</li>
+              <li>Heuristic outputs only. No definitive authorship or misconduct claims.</li>
+            </ul>
+          </div>
+          <div class="pf-intake__panel">
+            <div class="pf-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload TeX file or archive">
+              <input id="upload-input" type="file" accept=".tex,.zip,.tar,.gz,.tgz,.tar.gz" hidden>
+              <div class="pf-dropzone__title">Attach TeX manuscript or project archive</div>
+              <div class="pf-dropzone__subtitle">Drag and drop, or choose a file to analyze locally.</div>
+              <button type="button" class="pf-button pf-button--primary" id="choose-file">Choose File</button>
+            </div>
+            <div class="pf-upload-summary" id="upload-summary">
+              <div class="pf-empty">No file selected yet.</div>
+            </div>
+            <div class="pf-intake__actions">
+              <button type="button" class="pf-button pf-button--primary" id="analyze-button" disabled>Analyze</button>
+              <div class="pf-helper" id="corpus-label"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pf-loading" id="loading-view" hidden>
+        <div class="pf-loading__panel">
+          <div class="pf-loading__spinner" aria-hidden="true"></div>
+          <h2>Analyzing manuscript</h2>
+          <p class="pf-muted" id="loading-message">Preparing upload…</p>
+          <div class="pf-progress">
+            <span id="loading-progress" style="width: 10%;"></span>
+          </div>
+          <ol class="pf-loading__steps" id="loading-steps">
+            <li class="is-active">Preparing upload</li>
+            <li>Resolving TeX project</li>
+            <li>Running sentence audit</li>
+            <li>Finalizing review artifacts</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="pf-error" id="error-view" hidden>
+        <div class="pf-error__panel">
+          <h2>Unable to complete analysis</h2>
+          <p class="pf-muted" id="error-message"></p>
+          <button type="button" class="pf-button pf-button--secondary" id="error-reset">Start another review</button>
+        </div>
+      </section>
+
+      <section class="pf-workspace" id="workspace-view" hidden>
+        <aside class="pf-sidebar" id="left-pane">
+          <div class="pf-panel pf-panel--sticky">
+            <div class="pf-panel__section">
+              <p class="pf-eyebrow">Document</p>
+              <h1 class="pf-document-title" id="document-title">Review</h1>
+              <p class="pf-muted" id="document-subtitle"></p>
+            </div>
+
+            <div class="pf-panel__section">
+              <div class="pf-summary-grid" id="summary-grid"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>AI-assisted tell overview</h2>
+              <div id="ai-tell-overview"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Filters</h2>
+              <div class="pf-controls">
+                <label class="pf-control">
+                  <span>Section</span>
+                  <select id="filter-section"></select>
+                </label>
+                <label class="pf-control">
+                  <span>Plagiarism threshold</span>
+                  <input id="filter-plagiarism" type="range" min="0" max="1" step="0.05" value="0">
+                  <strong id="filter-plagiarism-value">0.00</strong>
+                </label>
+                <label class="pf-control">
+                  <span>AI-assisted tell threshold</span>
+                  <input id="filter-ai" type="range" min="0" max="1" step="0.05" value="0">
+                  <strong id="filter-ai-value">0.00</strong>
+                </label>
+                <label class="pf-check"><input type="checkbox" id="filter-flagged"> Only flagged sentences</label>
+                <label class="pf-check"><input type="checkbox" id="filter-matches"> Only sentences with external matches</label>
+                <label class="pf-check"><input type="checkbox" id="filter-triggers"> Only sentences with AI-assisted tell triggers</label>
+                <label class="pf-control">
+                  <span>Search</span>
+                  <input id="filter-search" type="search" placeholder="Find text, ids, sections, or sources">
+                </label>
+              </div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Suspicious spans</h2>
+              <div id="span-navigator" class="pf-nav-list"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Outline</h2>
+              <div id="outline-nav" class="pf-nav-list"></div>
+            </div>
+
+            <div class="pf-panel__section">
+              <h2>Scoring legend</h2>
+              <div class="pf-legend">
+                <div class="pf-legend__row">
+                  <span class="pf-swatch pf-swatch--plagiarism"></span>
+                  <div>
+                    <strong>Estimated overlap risk</strong>
+                    <p>Amber/red accents indicate stronger overlap evidence requiring review.</p>
+                  </div>
+                </div>
+                <div class="pf-legend__row">
+                  <span class="pf-swatch pf-swatch--ai"></span>
+                  <div>
+                    <strong>Estimated AI-assisted tell risk</strong>
+                    <p>Slate/violet accents indicate stronger heuristic AI-assisted tell signals.</p>
+                  </div>
+                </div>
+                <p class="pf-caveat" id="legend-caveat"></p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="pf-document-pane">
+          <div class="pf-panel pf-panel--document">
+            <div class="pf-panel__header">
+              <div>
+                <p class="pf-eyebrow">Document Review</p>
+                <h2>Primary manuscript viewer</h2>
+                <p class="pf-muted">Review the document in order, then jump directly into evidence on the right.</p>
+              </div>
+              <div class="pf-toolbar">
+                <label class="pf-toolbar__group">
+                  <span>View</span>
+                  <select id="view-mode">
+                    <option value="sentence">Sentence view</option>
+                    <option value="paragraph">Paragraph view</option>
+                  </select>
+                </label>
+                <label class="pf-toolbar__group">
+                  <span>Text</span>
+                  <select id="text-mode">
+                    <option value="clean">Clean text</option>
+                    <option value="raw">Raw TeX context</option>
+                  </select>
+                </label>
+                <label class="pf-toolbar__group">
+                  <span>Density</span>
+                  <select id="density-mode">
+                    <option value="comfortable">Comfortable</option>
+                    <option value="compact">Compact</option>
+                  </select>
+                </label>
+                <label class="pf-toolbar__group">
+                  <span>Order</span>
+                  <select id="sort-mode">
+                    <option value="document">Document order</option>
+                    <option value="combined">Highest combined risk</option>
+                    <option value="plagiarism">Highest plagiarism risk</option>
+                    <option value="ai">Highest AI-assisted tell risk</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="pf-panel__subheader">
+              <div id="result-count" class="pf-muted">0 sentences</div>
+              <div class="pf-shortcuts">
+                <span><kbd>↑</kbd><kbd>↓</kbd> move</span>
+                <span><kbd>Shift</kbd><kbd>↑</kbd>/<kbd>↓</kbd> flagged</span>
+                <span><kbd>Alt</kbd><kbd>↑</kbd>/<kbd>↓</kbd> suspicious span</span>
+              </div>
+            </div>
+
+            <div class="pf-document-list" id="document-list"></div>
+          </div>
+        </section>
+
+        <aside class="pf-inspector-pane">
+          <div class="pf-panel pf-panel--sticky">
+            <div class="pf-panel__header">
+              <div>
+                <p class="pf-eyebrow">Inspector</p>
+                <h2 id="inspector-title">Select a sentence</h2>
+                <p class="pf-muted" id="inspector-location">Sentence-level evidence appears here.</p>
+              </div>
+              <div class="pf-export" id="export-actions"></div>
+            </div>
+
+            <div id="inspector-empty" class="pf-empty">
+              Select a sentence in the center pane to inspect overlap evidence, AI-assisted tell triggers, and source context.
+            </div>
+
+            <div id="inspector-content" hidden>
+              <div class="pf-scorecards" id="scorecards"></div>
+
+              <div class="pf-card">
+                <h3>Reviewer summary</h3>
+                <p class="pf-muted" id="inspector-summary"></p>
+                <div class="pf-flag-reason" id="flag-reason"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Overlap evidence</h3>
+                <div id="plagiarism-features" class="pf-feature-list"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>AI-assisted tell evidence</h3>
+                <p class="pf-muted" id="ai-tell-summary"></p>
+                <div id="ai-features" class="pf-feature-list"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Matched literature excerpts</h3>
+                <div id="match-list" class="pf-match-list"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Phrase and tell-category triggers</h3>
+                <div class="pf-pill-list" id="triggered-phrases"></div>
+                <div class="pf-pill-list pf-pill-list--muted" id="triggered-categories"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Source context</h3>
+                <div class="pf-codeblock" id="source-context"></div>
+              </div>
+
+              <div class="pf-card">
+                <h3>Scoring note</h3>
+                <p class="pf-muted" id="scoring-note"></p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    window.__PF_INITIAL_PAYLOAD__ = {"document": {"title": "Main", "input_path": "examples\\sample_tex_project\\main.tex", "input_name": "main.tex", "corpus_path": "examples\\corpus", "generated_files": {"json": "audit.json", "csv": "audit.csv", "html": "report.html"}, "sentence_count": 8, "paragraph_count": 4}, "summary": {"sentence_count": 8, "mean_plagiarism_risk": 0.4547933151847626, "mean_ai_rhetoric_risk": 0.24500393074134663, "ai_tell_category_totals": {"balanced_summary": 2, "empty_transition": 2, "framework_boilerplate": 1, "low_specificity": 1}, "top_ai_tell_findings": [{"sentence_id": "introduction.par_001.sent_002", "section": "Introduction", "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "score": 0.5078408052348125, "finding_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50", "triggered_categories": ["empty_transition", "framework_boilerplate"]}, {"sentence_id": "methods.par_004.sent_001", "section": "Methods", "text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "score": 0.30158068415548933, "finding_summary": "empty_transition=0.50", "triggered_categories": ["empty_transition"]}, {"sentence_id": "methods.par_004.sent_002", "section": "Methods", "text": "This highlights the fact that some academic filler language is more irritating than informative.", "score": 0.2917448157950954, "finding_summary": "balanced_summary=0.50", "triggered_categories": ["balanced_but_empty_summary"]}, {"sentence_id": "introduction.par_002.sent_002", "section": "Introduction", "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "score": 0.25380195567365793, "finding_summary": "balanced_summary=0.50", "triggered_categories": ["balanced_but_empty_summary"]}, {"sentence_id": "introduction.par_001.sent_001", "section": "Introduction", "text": "This paper studies a compact auditing pipeline for academic prose.", "score": 0.18766802989309606, "finding_summary": "", "triggered_categories": []}], "top_plagiarism_sentences": [{"sentence_id": "methods.par_003.sent_002", "section": "Methods", "text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "score": 0.9250000000000002}, {"sentence_id": "introduction.par_002.sent_002", "section": "Introduction", "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "score": 0.6168953400324728}, {"sentence_id": "introduction.par_001.sent_001", "section": "Introduction", "text": "This paper studies a compact auditing pipeline for academic prose.", "score": 0.5242899191008171}, {"sentence_id": "introduction.par_001.sent_002", "section": "Introduction", "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "score": 0.4970316222335336}, {"sentence_id": "methods.par_004.sent_002", "section": "Methods", "text": "This highlights the fact that some academic filler language is more irritating than informative.", "score": 0.3854255663101094}], "top_ai_sentences": [{"sentence_id": "introduction.par_001.sent_002", "section": "Introduction", "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "score": 0.5078408052348125}, {"sentence_id": "methods.par_004.sent_001", "section": "Methods", "text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "score": 0.30158068415548933}, {"sentence_id": "methods.par_004.sent_002", "section": "Methods", "text": "This highlights the fact that some academic filler language is more irritating than informative.", "score": 0.2917448157950954}, {"sentence_id": "introduction.par_002.sent_002", "section": "Introduction", "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "score": 0.25380195567365793}, {"sentence_id": "introduction.par_001.sent_001", "section": "Introduction", "text": "This paper studies a compact auditing pipeline for academic prose.", "score": 0.18766802989309606}]}, "ai_tell_overview": {"category_totals": {"balanced_summary": 2, "empty_transition": 2, "framework_boilerplate": 1, "low_specificity": 1}, "dominant_categories": [{"label": "balanced summary", "count": 2}, {"label": "empty transition", "count": 2}, {"label": "framework boilerplate", "count": 1}, {"label": "low specificity", "count": 1}], "top_findings": [{"sentence_id": "introduction.par_001.sent_002", "section": "Introduction", "text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "score": 0.5078408052348125, "finding_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50", "triggered_categories": ["empty_transition", "framework_boilerplate"]}, {"sentence_id": "methods.par_004.sent_001", "section": "Methods", "text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "score": 0.30158068415548933, "finding_summary": "empty_transition=0.50", "triggered_categories": ["empty_transition"]}, {"sentence_id": "methods.par_004.sent_002", "section": "Methods", "text": "This highlights the fact that some academic filler language is more irritating than informative.", "score": 0.2917448157950954, "finding_summary": "balanced_summary=0.50", "triggered_categories": ["balanced_but_empty_summary"]}, {"sentence_id": "introduction.par_002.sent_002", "section": "Introduction", "text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "score": 0.25380195567365793, "finding_summary": "balanced_summary=0.50", "triggered_categories": ["balanced_but_empty_summary"]}, {"sentence_id": "introduction.par_001.sent_001", "section": "Introduction", "text": "This paper studies a compact auditing pipeline for academic prose.", "score": 0.18766802989309606, "finding_summary": "", "triggered_categories": []}]}, "metrics": {"flagged_sentence_count": 2, "external_match_count": 8, "triggered_sentence_count": 4, "suspicious_span_count": 2, "max_plagiarism_risk": 0.925, "max_ai_risk": 0.508, "section_count": 2}, "rows": [{"order": 0, "sentence_id": "introduction.par_001.sent_001", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 1, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L4-L6", "line_start": 4, "line_end": 6, "source_context_label": "Context L4-L6", "line_label": "L4-L6", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "This paper studies a compact auditing pipeline for academic prose.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "plagiarism_risk_score": 0.524, "ai_rhetoric_risk_score": 0.188, "combined_risk": 0.524, "plagiarism_band": "medium", "ai_band": "low", "combined_band": "medium", "has_external_match": true, "has_ai_trigger": false, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "Overlap evidence available from similar_paper for reviewer inspection.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.46901027774037785, "lexical_overlap": 0.35294117647058826, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["compact auditing pipeline for academic", "auditing pipeline for academic prose", "a compact auditing pipeline for", "auditing pipeline for academic", "compact auditing pipeline for"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.46901027774037785, "lexical_overlap": 0.35294117647058826, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["compact auditing pipeline for academic", "auditing pipeline for academic prose", "a compact auditing pipeline for", "auditing pipeline for academic", "compact auditing pipeline for"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.02739712091471181, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.017487152898206144, "lexical_overlap": 0.045454545454545456, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.469}, {"label": "Lexical overlap", "value": 0.353}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.075}, {"label": "Style shift", "value": 0.639}, {"label": "Smoothness", "value": 0.261}, {"label": "Heuristic classifier", "value": 0.15}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.7}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_001.sent_001", "clean_text": "This paper studies a compact auditing pipeline for academic prose.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "source_context_char_start": 13, "source_context_char_end": 301, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 1, "char_start": 0, "char_end": 66}, "plagiarism_risk_score": 0.5242899191008171, "ai_rhetoric_risk_score": 0.18766802989309606, "plagiarism_evidence": {"vector_similarity_score": 0.46901027774037785, "lexical_overlap_score": 0.35294117647058826, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.46901027774037785, "lexical_overlap": 0.35294117647058826, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["compact auditing pipeline for academic", "auditing pipeline for academic prose", "a compact auditing pipeline for", "auditing pipeline for academic", "compact auditing pipeline for"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.02739712091471181, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.017487152898206144, "lexical_overlap": 0.045454545454545456, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.07500000000000001, "style_shift_score": 0.6388950853726588, "smoothness_score": 0.2611111111111112, "heuristic_classifier_score": 0.15027901707453176, "content_ratio": 0.7, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 1, "sentence_id": "introduction.par_001.sent_002", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 2, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L4-L6", "line_start": 4, "line_end": 6, "source_context_label": "Context L4-L6", "line_label": "L4-L6", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "plagiarism_risk_score": 0.497, "ai_rhetoric_risk_score": 0.508, "combined_risk": 0.508, "plagiarism_band": "medium", "ai_band": "medium", "combined_band": "medium", "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "AI-assisted tell evidence available: low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50.", "ai_tell_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50", "ai_tell_subscores": {"empty_transition": 0.5, "framework_boilerplate": 0.5, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.668}, "triggered_phrases": ["it is important to note", "robust framework"], "triggered_categories": ["empty_transition", "framework_boilerplate"], "top_match": {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.3998363535014196, "lexical_overlap": 0.3684210526315789, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["is important to note that", "it is important to note", "important to note that", "is important to note", "a robust framework"]}, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.3998363535014196, "lexical_overlap": 0.3684210526315789, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["is important to note that", "it is important to note", "important to note that", "is important to note", "a robust framework"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.0467642509059671, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.04459775688272741, "lexical_overlap": 0.07407407407407407, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.4}, {"label": "Lexical overlap", "value": 0.368}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.667}, {"label": "Semantic thinness", "value": 0.488}, {"label": "Style shift", "value": 0.278}, {"label": "Smoothness", "value": 0.433}, {"label": "Heuristic classifier", "value": 0.535}, {"label": "Empty transition", "value": 0.5}, {"label": "Framework boilerplate", "value": 0.5}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.668}, {"label": "Content ratio", "value": 0.571}, {"label": "Abstract word ratio", "value": 0.19}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_001.sent_002", "clean_text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "source_context_char_start": 13, "source_context_char_end": 301, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 2, "char_start": 67, "char_end": 200}, "plagiarism_risk_score": 0.4970316222335336, "ai_rhetoric_risk_score": 0.5078408052348125, "plagiarism_evidence": {"vector_similarity_score": 0.3998363535014196, "lexical_overlap_score": 0.3684210526315789, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.3998363535014196, "lexical_overlap": 0.3684210526315789, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["is important to note that", "it is important to note", "important to note that", "is important to note", "a robust framework"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.0467642509059671, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.04459775688272741, "lexical_overlap": 0.07407407407407407, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["it is important to note", "robust framework"], "triggered_categories": ["empty_transition", "framework_boilerplate"], "phrase_pattern_score": 0.6666666666666666, "semantic_thinness_score": 0.48842857142857143, "style_shift_score": 0.27787676621884483, "smoothness_score": 0.43281250000000004, "heuristic_classifier_score": 0.5354372580056737, "content_ratio": 0.5714285714285714, "abstract_word_ratio": 0.19047619047619047, "empty_transition_score": 0.5, "framework_boilerplate_score": 0.5, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.6676190476190476, "finding_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50"}}}, {"order": 2, "sentence_id": "introduction.par_002.sent_001", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 1, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L8", "line_start": 8, "line_end": 8, "source_context_label": "Context L8", "line_label": "L8", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "plagiarism_risk_score": 0.301, "ai_rhetoric_risk_score": 0.18, "combined_risk": 0.301, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": false, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "Overlap evidence available from similar_paper for reviewer inspection.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.15879623629035708, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["sentence level evidence"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.15879623629035708, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["sentence level evidence"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.05139492461683037, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.04757610445412906, "lexical_overlap": 0.06896551724137931, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.159}, {"label": "Lexical overlap", "value": 0.217}, {"label": "Rare phrase overlap", "value": 0.7}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.168}, {"label": "Style shift", "value": 0.375}, {"label": "Smoothness", "value": 0.504}, {"label": "Heuristic classifier", "value": 0.125}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.727}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_002.sent_001", "clean_text": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "source_context_char_start": 303, "source_context_char_end": 535, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 1, "char_start": 0, "char_end": 132}, "plagiarism_risk_score": 0.3008061324176172, "ai_rhetoric_risk_score": 0.1799913986926524, "plagiarism_evidence": {"vector_similarity_score": 0.15879623629035708, "lexical_overlap_score": 0.21739130434782608, "rare_phrase_overlap_score": 0.7, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.15879623629035708, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["sentence level evidence"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.05139492461683037, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.04757610445412906, "lexical_overlap": 0.06896551724137931, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.16818181818181818, "style_shift_score": 0.37500222546246953, "smoothness_score": 0.5040000000000001, "heuristic_classifier_score": 0.12545499054703937, "content_ratio": 0.7272727272727273, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 3, "sentence_id": "introduction.par_002.sent_002", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 2, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L8", "line_start": 8, "line_end": 8, "source_context_label": "Context L8", "line_label": "L8", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "plagiarism_risk_score": 0.617, "ai_rhetoric_risk_score": 0.254, "combined_risk": 0.617, "plagiarism_band": "medium", "ai_band": "low", "combined_band": "medium", "has_external_match": true, "has_ai_trigger": true, "is_flagged": true, "flag_reason": "Review required for elevated overlap evidence.", "summary": "Elevated overlap signal with strongest local match in similar_paper.", "ai_tell_summary": "balanced_summary=0.50", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.5, "low_specificity": 0.007}, "triggered_phrases": ["the results demonstrate that"], "triggered_categories": ["balanced_but_empty_summary"], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.5931007556277172, "lexical_overlap": 0.5, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["inspect than a single document", "evidence is easier to inspect", "than a single document wide", "is easier to inspect than", "to inspect than a single"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.5931007556277172, "lexical_overlap": 0.5, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["inspect than a single document", "evidence is easier to inspect", "than a single document wide", "is easier to inspect than", "to inspect than a single"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.0662381731869356, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03937774242470099, "lexical_overlap": 0.038461538461538464, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.593}, {"label": "Lexical overlap", "value": 0.5}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.333}, {"label": "Semantic thinness", "value": 0.081}, {"label": "Style shift", "value": 0.111}, {"label": "Smoothness", "value": 0.734}, {"label": "Heuristic classifier", "value": 0.213}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.5}, {"label": "Low specificity", "value": 0.007}, {"label": "Content ratio", "value": 0.688}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_002.sent_002", "clean_text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "source_context_char_start": 303, "source_context_char_end": 535, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 2, "char_start": 133, "char_end": 232}, "plagiarism_risk_score": 0.6168953400324728, "ai_rhetoric_risk_score": 0.25380195567365793, "plagiarism_evidence": {"vector_similarity_score": 0.5931007556277172, "lexical_overlap_score": 0.5, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.5931007556277172, "lexical_overlap": 0.5, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["inspect than a single document", "evidence is easier to inspect", "than a single document wide", "is easier to inspect than", "to inspect than a single"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.0662381731869356, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03937774242470099, "lexical_overlap": 0.038461538461538464, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["the results demonstrate that"], "triggered_categories": ["balanced_but_empty_summary"], "phrase_pattern_score": 0.3333333333333333, "semantic_thinness_score": 0.08074999999999999, "style_shift_score": 0.11117555609238441, "smoothness_score": 0.734, "heuristic_classifier_score": 0.21312677788514353, "content_ratio": 0.6875, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.5, "low_specificity_score": 0.007499999999999973, "finding_summary": "balanced_summary=0.50"}}}, {"order": 4, "sentence_id": "methods.par_003.sent_001", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 1, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L11-L13", "line_start": 11, "line_end": 13, "source_context_label": "Context L11-L13", "line_label": "L11-L13", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "Our workflow indexes a local corpus and compares each sentence against previously written literature.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "plagiarism_risk_score": 0.337, "ai_rhetoric_risk_score": 0.126, "combined_risk": 0.337, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": false, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "Overlap evidence available from similar_paper for reviewer inspection.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.20235962337626112, "lexical_overlap": 0.2857142857142857, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["each sentence against"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.20235962337626112, "lexical_overlap": 0.2857142857142857, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["each sentence against"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.03292571560021256, "lexical_overlap": 0.08, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.023608387708746428, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.202}, {"label": "Lexical overlap", "value": 0.286}, {"label": "Rare phrase overlap", "value": 0.7}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.036}, {"label": "Style shift", "value": 0.167}, {"label": "Smoothness", "value": 0.794}, {"label": "Heuristic classifier", "value": 0.044}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.857}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "methods.par_003.sent_001", "clean_text": "Our workflow indexes a local corpus and compares each sentence against previously written literature.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "source_context_char_start": 538, "source_context_char_end": 838, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 1, "char_start": 0, "char_end": 101}, "plagiarism_risk_score": 0.33749040194788893, "ai_rhetoric_risk_score": 0.12608846022487147, "plagiarism_evidence": {"vector_similarity_score": 0.20235962337626112, "lexical_overlap_score": 0.2857142857142857, "rare_phrase_overlap_score": 0.7, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.20235962337626112, "lexical_overlap": 0.2857142857142857, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["each sentence against"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.03292571560021256, "lexical_overlap": 0.08, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.023608387708746428, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.035714285714285726, "style_shift_score": 0.16676572829487016, "smoothness_score": 0.794, "heuristic_classifier_score": 0.044067431373259754, "content_ratio": 0.8571428571428571, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 5, "sentence_id": "methods.par_003.sent_002", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 2, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L11-L13", "line_start": 11, "line_end": 13, "source_context_label": "Context L11-L13", "line_label": "L11-L13", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "plagiarism_risk_score": 0.925, "ai_rhetoric_risk_score": 0.111, "combined_risk": 0.925, "plagiarism_band": "high", "ai_band": "low", "combined_band": "high", "has_external_match": true, "has_ai_trigger": false, "is_flagged": true, "flag_reason": "Review required for elevated overlap evidence.", "summary": "Elevated overlap signal with strongest local match in similar_paper.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 1.0000000000000002, "lexical_overlap": 1.0, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["similarity against candidate source passages", "proposed pipeline computes lexical overlap", "vector similarity against candidate source", "pipeline computes lexical overlap phrase", "computes lexical overlap phrase overlap"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 1.0000000000000002, "lexical_overlap": 1.0, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["similarity against candidate source passages", "proposed pipeline computes lexical overlap", "vector similarity against candidate source", "pipeline computes lexical overlap phrase", "computes lexical overlap phrase overlap"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03015269018655764, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.015454140751374116, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 1.0}, {"label": "Lexical overlap", "value": 1.0}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.033}, {"label": "Style shift", "value": 0.015}, {"label": "Smoothness", "value": 0.986}, {"label": "Heuristic classifier", "value": 0.013}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.867}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "methods.par_003.sent_002", "clean_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "source_context_char_start": 538, "source_context_char_end": 838, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 2, "char_start": 102, "char_end": 222}, "plagiarism_risk_score": 0.9250000000000002, "ai_rhetoric_risk_score": 0.11131529626109789, "plagiarism_evidence": {"vector_similarity_score": 1.0000000000000002, "lexical_overlap_score": 1.0, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 1.0000000000000002, "lexical_overlap": 1.0, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["similarity against candidate source passages", "proposed pipeline computes lexical overlap", "vector similarity against candidate source", "pipeline computes lexical overlap phrase", "computes lexical overlap phrase overlap"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03015269018655764, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.015454140751374116, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.033333333333333326, "style_shift_score": 0.01537255876256611, "smoothness_score": 0.986, "heuristic_classifier_score": 0.013074511752513219, "content_ratio": 0.8666666666666667, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 6, "sentence_id": "methods.par_004.sent_001", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 1, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L15", "line_start": 15, "line_end": 15, "source_context_label": "Context L15", "line_label": "L15", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "plagiarism_risk_score": 0.051, "ai_rhetoric_risk_score": 0.302, "combined_risk": 0.302, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "AI-assisted tell evidence available: empty_transition=0.50.", "ai_tell_summary": "empty_transition=0.50", "ai_tell_subscores": {"empty_transition": 0.5, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": ["additionally"], "triggered_categories": ["empty_transition"], "top_match": {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.05013641242112815, "lexical_overlap": 0.11538461538461539, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.05013641242112815, "lexical_overlap": 0.11538461538461539, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.04192146158087854, "lexical_overlap": 0.08695652173913043, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.030617621703955312, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.05}, {"label": "Lexical overlap", "value": 0.115}, {"label": "Rare phrase overlap", "value": 0.0}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.333}, {"label": "Semantic thinness", "value": 0.217}, {"label": "Style shift", "value": 0.037}, {"label": "Smoothness", "value": 0.994}, {"label": "Heuristic classifier", "value": 0.239}, {"label": "Empty transition", "value": 0.5}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.733}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "methods.par_004.sent_001", "clean_text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "source_context_char_start": 840, "source_context_char_end": 1044, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 1, "char_start": 0, "char_end": 107}, "plagiarism_risk_score": 0.051407539435661516, "ai_rhetoric_risk_score": 0.30158068415548933, "plagiarism_evidence": {"vector_similarity_score": 0.05013641242112815, "lexical_overlap_score": 0.11538461538461539, "rare_phrase_overlap_score": 0.0, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.05013641242112815, "lexical_overlap": 0.11538461538461539, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.04192146158087854, "lexical_overlap": 0.08695652173913043, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.030617621703955312, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["additionally"], "triggered_categories": ["empty_transition"], "phrase_pattern_score": 0.3333333333333333, "semantic_thinness_score": 0.21666666666666667, "style_shift_score": 0.037298564343133306, "smoothness_score": 0.99375, "heuristic_classifier_score": 0.2391263795352933, "content_ratio": 0.7333333333333333, "abstract_word_ratio": 0.0, "empty_transition_score": 0.5, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": "empty_transition=0.50"}}}, {"order": 7, "sentence_id": "methods.par_004.sent_002", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 2, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L15", "line_start": 15, "line_end": 15, "source_context_label": "Context L15", "line_label": "L15", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "plagiarism_risk_score": 0.385, "ai_rhetoric_risk_score": 0.292, "combined_risk": 0.385, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "AI-assisted tell evidence available: balanced_summary=0.50.", "ai_tell_summary": "balanced_summary=0.50", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.5, "low_specificity": 0.221}, "triggered_phrases": ["this highlights the fact that"], "triggered_categories": ["balanced_but_empty_summary"], "top_match": {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.23572831160700639, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["this highlights the fact that", "this highlights the fact", "highlights the fact that", "this highlights the", "highlights the fact"]}, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.23572831160700639, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["this highlights the fact that", "this highlights the fact", "highlights the fact that", "this highlights the", "highlights the fact"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.04896762356290806, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.03635512795453622, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.236}, {"label": "Lexical overlap", "value": 0.217}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.333}, {"label": "Semantic thinness", "value": 0.167}, {"label": "Style shift", "value": 0.056}, {"label": "Smoothness", "value": 0.994}, {"label": "Heuristic classifier", "value": 0.228}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.5}, {"label": "Low specificity", "value": 0.221}, {"label": "Content ratio", "value": 0.714}, {"label": "Abstract word ratio", "value": 0.071}]}, "all_data": {"sentence": {"sentence_id": "methods.par_004.sent_002", "clean_text": "This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "source_context_char_start": 840, "source_context_char_end": 1044, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 2, "char_start": 108, "char_end": 204}, "plagiarism_risk_score": 0.3854255663101094, "ai_rhetoric_risk_score": 0.2917448157950954, "plagiarism_evidence": {"vector_similarity_score": 0.23572831160700639, "lexical_overlap_score": 0.21739130434782608, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.23572831160700639, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["this highlights the fact that", "this highlights the fact", "highlights the fact that", "this highlights the", "highlights the fact"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.04896762356290806, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.03635512795453622, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["this highlights the fact that"], "triggered_categories": ["balanced_but_empty_summary"], "phrase_pattern_score": 0.3333333333333333, "semantic_thinness_score": 0.16678571428571426, "style_shift_score": 0.055759263715080304, "smoothness_score": 0.9944444444444445, "heuristic_classifier_score": 0.22785423369539698, "content_ratio": 0.7142857142857143, "abstract_word_ratio": 0.07142857142857142, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.5, "low_specificity_score": 0.22142857142857142, "finding_summary": "balanced_summary=0.50"}}}], "paragraphs": [{"paragraph_id": "introduction.par_001", "paragraph_index": 1, "section": "Introduction", "subsection": "", "line_start": 4, "line_end": 6, "location_label": "Introduction \u00b7 L4-L6", "paragraph_band": "medium", "combined_risk": 0.524, "plagiarism_risk_score": 0.524, "ai_rhetoric_risk_score": 0.508, "sentence_ids": ["introduction.par_001.sent_001", "introduction.par_001.sent_002"], "sentence_count": 2, "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "display_text": "This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "rows": [{"order": 0, "sentence_id": "introduction.par_001.sent_001", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 1, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L4-L6", "line_start": 4, "line_end": 6, "source_context_label": "Context L4-L6", "line_label": "L4-L6", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "This paper studies a compact auditing pipeline for academic prose.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "plagiarism_risk_score": 0.524, "ai_rhetoric_risk_score": 0.188, "combined_risk": 0.524, "plagiarism_band": "medium", "ai_band": "low", "combined_band": "medium", "has_external_match": true, "has_ai_trigger": false, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "Overlap evidence available from similar_paper for reviewer inspection.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.46901027774037785, "lexical_overlap": 0.35294117647058826, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["compact auditing pipeline for academic", "auditing pipeline for academic prose", "a compact auditing pipeline for", "auditing pipeline for academic", "compact auditing pipeline for"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.46901027774037785, "lexical_overlap": 0.35294117647058826, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["compact auditing pipeline for academic", "auditing pipeline for academic prose", "a compact auditing pipeline for", "auditing pipeline for academic", "compact auditing pipeline for"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.02739712091471181, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.017487152898206144, "lexical_overlap": 0.045454545454545456, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.469}, {"label": "Lexical overlap", "value": 0.353}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.075}, {"label": "Style shift", "value": 0.639}, {"label": "Smoothness", "value": 0.261}, {"label": "Heuristic classifier", "value": 0.15}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.7}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_001.sent_001", "clean_text": "This paper studies a compact auditing pipeline for academic prose.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "source_context_char_start": 13, "source_context_char_end": 301, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 1, "char_start": 0, "char_end": 66}, "plagiarism_risk_score": 0.5242899191008171, "ai_rhetoric_risk_score": 0.18766802989309606, "plagiarism_evidence": {"vector_similarity_score": 0.46901027774037785, "lexical_overlap_score": 0.35294117647058826, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.46901027774037785, "lexical_overlap": 0.35294117647058826, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["compact auditing pipeline for academic", "auditing pipeline for academic prose", "a compact auditing pipeline for", "auditing pipeline for academic", "compact auditing pipeline for"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.02739712091471181, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.017487152898206144, "lexical_overlap": 0.045454545454545456, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.07500000000000001, "style_shift_score": 0.6388950853726588, "smoothness_score": 0.2611111111111112, "heuristic_classifier_score": 0.15027901707453176, "content_ratio": 0.7, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 1, "sentence_id": "introduction.par_001.sent_002", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 2, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L4-L6", "line_start": 4, "line_end": 6, "source_context_label": "Context L4-L6", "line_label": "L4-L6", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "plagiarism_risk_score": 0.497, "ai_rhetoric_risk_score": 0.508, "combined_risk": 0.508, "plagiarism_band": "medium", "ai_band": "medium", "combined_band": "medium", "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "AI-assisted tell evidence available: low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50.", "ai_tell_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50", "ai_tell_subscores": {"empty_transition": 0.5, "framework_boilerplate": 0.5, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.668}, "triggered_phrases": ["it is important to note", "robust framework"], "triggered_categories": ["empty_transition", "framework_boilerplate"], "top_match": {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.3998363535014196, "lexical_overlap": 0.3684210526315789, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["is important to note that", "it is important to note", "important to note that", "is important to note", "a robust framework"]}, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.3998363535014196, "lexical_overlap": 0.3684210526315789, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["is important to note that", "it is important to note", "important to note that", "is important to note", "a robust framework"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.0467642509059671, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.04459775688272741, "lexical_overlap": 0.07407407407407407, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.4}, {"label": "Lexical overlap", "value": 0.368}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.667}, {"label": "Semantic thinness", "value": 0.488}, {"label": "Style shift", "value": 0.278}, {"label": "Smoothness", "value": 0.433}, {"label": "Heuristic classifier", "value": 0.535}, {"label": "Empty transition", "value": 0.5}, {"label": "Framework boilerplate", "value": 0.5}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.668}, {"label": "Content ratio", "value": 0.571}, {"label": "Abstract word ratio", "value": 0.19}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_001.sent_002", "clean_text": "It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_fragment": "\\section{Introduction} This paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "raw_tex_context": "\\section{Introduction}\n\nThis paper studies a compact auditing pipeline for academic prose. It is important to note that the proposed approach provides a robust framework for rapidly inspecting suspicious language in a paper.", "source_context_char_start": 13, "source_context_char_end": 301, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_001", "paragraph_index": 1, "sentence_index": 2, "char_start": 67, "char_end": 200}, "plagiarism_risk_score": 0.4970316222335336, "ai_rhetoric_risk_score": 0.5078408052348125, "plagiarism_evidence": {"vector_similarity_score": 0.3998363535014196, "lexical_overlap_score": 0.3684210526315789, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.3998363535014196, "lexical_overlap": 0.3684210526315789, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["is important to note that", "it is important to note", "important to note that", "is important to note", "a robust framework"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.0467642509059671, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.04459775688272741, "lexical_overlap": 0.07407407407407407, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["it is important to note", "robust framework"], "triggered_categories": ["empty_transition", "framework_boilerplate"], "phrase_pattern_score": 0.6666666666666666, "semantic_thinness_score": 0.48842857142857143, "style_shift_score": 0.27787676621884483, "smoothness_score": 0.43281250000000004, "heuristic_classifier_score": 0.5354372580056737, "content_ratio": 0.5714285714285714, "abstract_word_ratio": 0.19047619047619047, "empty_transition_score": 0.5, "framework_boilerplate_score": 0.5, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.6676190476190476, "finding_summary": "low_specificity=0.67|empty_transition=0.50|framework_boilerplate=0.50"}}}]}, {"paragraph_id": "introduction.par_002", "paragraph_index": 2, "section": "Introduction", "subsection": "", "line_start": 8, "line_end": 8, "location_label": "Introduction \u00b7 L8", "paragraph_band": "medium", "combined_risk": 0.617, "plagiarism_risk_score": 0.617, "ai_rhetoric_risk_score": 0.254, "sentence_ids": ["introduction.par_002.sent_001", "introduction.par_002.sent_002"], "sentence_count": 2, "has_external_match": true, "has_ai_trigger": true, "is_flagged": true, "display_text": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "rows": [{"order": 2, "sentence_id": "introduction.par_002.sent_001", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 1, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L8", "line_start": 8, "line_end": 8, "source_context_label": "Context L8", "line_label": "L8", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "plagiarism_risk_score": 0.301, "ai_rhetoric_risk_score": 0.18, "combined_risk": 0.301, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": false, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "Overlap evidence available from similar_paper for reviewer inspection.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.15879623629035708, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["sentence level evidence"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.15879623629035708, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["sentence level evidence"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.05139492461683037, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.04757610445412906, "lexical_overlap": 0.06896551724137931, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.159}, {"label": "Lexical overlap", "value": 0.217}, {"label": "Rare phrase overlap", "value": 0.7}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.168}, {"label": "Style shift", "value": 0.375}, {"label": "Smoothness", "value": 0.504}, {"label": "Heuristic classifier", "value": 0.125}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.727}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_002.sent_001", "clean_text": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "source_context_char_start": 303, "source_context_char_end": 535, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 1, "char_start": 0, "char_end": 132}, "plagiarism_risk_score": 0.3008061324176172, "ai_rhetoric_risk_score": 0.1799913986926524, "plagiarism_evidence": {"vector_similarity_score": 0.15879623629035708, "lexical_overlap_score": 0.21739130434782608, "rare_phrase_overlap_score": 0.7, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.15879623629035708, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["sentence level evidence"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.05139492461683037, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.04757610445412906, "lexical_overlap": 0.06896551724137931, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.16818181818181818, "style_shift_score": 0.37500222546246953, "smoothness_score": 0.5040000000000001, "heuristic_classifier_score": 0.12545499054703937, "content_ratio": 0.7272727272727273, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 3, "sentence_id": "introduction.par_002.sent_002", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 2, "section": "Introduction", "subsection": "", "location_label": "Introduction \u00b7 L8", "line_start": 8, "line_end": 8, "source_context_label": "Context L8", "line_label": "L8", "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "clean_text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "plagiarism_risk_score": 0.617, "ai_rhetoric_risk_score": 0.254, "combined_risk": 0.617, "plagiarism_band": "medium", "ai_band": "low", "combined_band": "medium", "has_external_match": true, "has_ai_trigger": true, "is_flagged": true, "flag_reason": "Review required for elevated overlap evidence.", "summary": "Elevated overlap signal with strongest local match in similar_paper.", "ai_tell_summary": "balanced_summary=0.50", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.5, "low_specificity": 0.007}, "triggered_phrases": ["the results demonstrate that"], "triggered_categories": ["balanced_but_empty_summary"], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.5931007556277172, "lexical_overlap": 0.5, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["inspect than a single document", "evidence is easier to inspect", "than a single document wide", "is easier to inspect than", "to inspect than a single"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.5931007556277172, "lexical_overlap": 0.5, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["inspect than a single document", "evidence is easier to inspect", "than a single document wide", "is easier to inspect than", "to inspect than a single"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.0662381731869356, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03937774242470099, "lexical_overlap": 0.038461538461538464, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.593}, {"label": "Lexical overlap", "value": 0.5}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.333}, {"label": "Semantic thinness", "value": 0.081}, {"label": "Style shift", "value": 0.111}, {"label": "Smoothness", "value": 0.734}, {"label": "Heuristic classifier", "value": 0.213}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.5}, {"label": "Low specificity", "value": 0.007}, {"label": "Content ratio", "value": 0.688}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "introduction.par_002.sent_002", "clean_text": "The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_fragment": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "raw_tex_context": "We focus on sentence-level evidence so that a reviewer can read the source material without trusting a single global detector score. The results demonstrate that local evidence is easier to inspect than a single document-wide label.", "source_context_char_start": 303, "source_context_char_end": 535, "source_file": "examples\\sample_tex_project\\sections\\introduction.tex", "section": "Introduction", "subsection": "", "paragraph_id": "introduction.par_002", "paragraph_index": 2, "sentence_index": 2, "char_start": 133, "char_end": 232}, "plagiarism_risk_score": 0.6168953400324728, "ai_rhetoric_risk_score": 0.25380195567365793, "plagiarism_evidence": {"vector_similarity_score": 0.5931007556277172, "lexical_overlap_score": 0.5, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.5931007556277172, "lexical_overlap": 0.5, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["inspect than a single document", "evidence is easier to inspect", "than a single document wide", "is easier to inspect than", "to inspect than a single"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.0662381731869356, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03937774242470099, "lexical_overlap": 0.038461538461538464, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["the results demonstrate that"], "triggered_categories": ["balanced_but_empty_summary"], "phrase_pattern_score": 0.3333333333333333, "semantic_thinness_score": 0.08074999999999999, "style_shift_score": 0.11117555609238441, "smoothness_score": 0.734, "heuristic_classifier_score": 0.21312677788514353, "content_ratio": 0.6875, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.5, "low_specificity_score": 0.007499999999999973, "finding_summary": "balanced_summary=0.50"}}}]}, {"paragraph_id": "methods.par_003", "paragraph_index": 3, "section": "Methods", "subsection": "", "line_start": 11, "line_end": 13, "location_label": "Methods \u00b7 L11-L13", "paragraph_band": "high", "combined_risk": 0.925, "plagiarism_risk_score": 0.925, "ai_rhetoric_risk_score": 0.126, "sentence_ids": ["methods.par_003.sent_001", "methods.par_003.sent_002"], "sentence_count": 2, "has_external_match": true, "has_ai_trigger": false, "is_flagged": true, "display_text": "Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "rows": [{"order": 4, "sentence_id": "methods.par_003.sent_001", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 1, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L11-L13", "line_start": 11, "line_end": 13, "source_context_label": "Context L11-L13", "line_label": "L11-L13", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "Our workflow indexes a local corpus and compares each sentence against previously written literature.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "plagiarism_risk_score": 0.337, "ai_rhetoric_risk_score": 0.126, "combined_risk": 0.337, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": false, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "Overlap evidence available from similar_paper for reviewer inspection.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.20235962337626112, "lexical_overlap": 0.2857142857142857, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["each sentence against"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.20235962337626112, "lexical_overlap": 0.2857142857142857, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["each sentence against"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.03292571560021256, "lexical_overlap": 0.08, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.023608387708746428, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.202}, {"label": "Lexical overlap", "value": 0.286}, {"label": "Rare phrase overlap", "value": 0.7}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.036}, {"label": "Style shift", "value": 0.167}, {"label": "Smoothness", "value": 0.794}, {"label": "Heuristic classifier", "value": 0.044}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.857}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "methods.par_003.sent_001", "clean_text": "Our workflow indexes a local corpus and compares each sentence against previously written literature.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "source_context_char_start": 538, "source_context_char_end": 838, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 1, "char_start": 0, "char_end": 101}, "plagiarism_risk_score": 0.33749040194788893, "ai_rhetoric_risk_score": 0.12608846022487147, "plagiarism_evidence": {"vector_similarity_score": 0.20235962337626112, "lexical_overlap_score": 0.2857142857142857, "rare_phrase_overlap_score": 0.7, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.20235962337626112, "lexical_overlap": 0.2857142857142857, "rare_phrase_overlap": 0.7, "overlapping_phrases": ["each sentence against"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.03292571560021256, "lexical_overlap": 0.08, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.023608387708746428, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.035714285714285726, "style_shift_score": 0.16676572829487016, "smoothness_score": 0.794, "heuristic_classifier_score": 0.044067431373259754, "content_ratio": 0.8571428571428571, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}, {"order": 5, "sentence_id": "methods.par_003.sent_002", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 2, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L11-L13", "line_start": 11, "line_end": 13, "source_context_label": "Context L11-L13", "line_label": "L11-L13", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "plagiarism_risk_score": 0.925, "ai_rhetoric_risk_score": 0.111, "combined_risk": 0.925, "plagiarism_band": "high", "ai_band": "low", "combined_band": "high", "has_external_match": true, "has_ai_trigger": false, "is_flagged": true, "flag_reason": "Review required for elevated overlap evidence.", "summary": "Elevated overlap signal with strongest local match in similar_paper.", "ai_tell_summary": "", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": [], "triggered_categories": [], "top_match": {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 1.0000000000000002, "lexical_overlap": 1.0, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["similarity against candidate source passages", "proposed pipeline computes lexical overlap", "vector similarity against candidate source", "pipeline computes lexical overlap phrase", "computes lexical overlap phrase overlap"]}, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 1.0000000000000002, "lexical_overlap": 1.0, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["similarity against candidate source passages", "proposed pipeline computes lexical overlap", "vector similarity against candidate source", "pipeline computes lexical overlap phrase", "computes lexical overlap phrase overlap"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03015269018655764, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.015454140751374116, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 1.0}, {"label": "Lexical overlap", "value": 1.0}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.0}, {"label": "Semantic thinness", "value": 0.033}, {"label": "Style shift", "value": 0.015}, {"label": "Smoothness", "value": 0.986}, {"label": "Heuristic classifier", "value": 0.013}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.867}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "methods.par_003.sent_002", "clean_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_fragment": "\\section{Methods} Our workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "raw_tex_context": "\\section{Methods}\n\nOur workflow indexes a local corpus and compares each sentence against previously written literature. The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "source_context_char_start": 538, "source_context_char_end": 838, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_003", "paragraph_index": 3, "sentence_index": 2, "char_start": 102, "char_end": 222}, "plagiarism_risk_score": 0.9250000000000002, "ai_rhetoric_risk_score": 0.11131529626109789, "plagiarism_evidence": {"vector_similarity_score": 1.0000000000000002, "lexical_overlap_score": 1.0, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 1.0000000000000002, "lexical_overlap": 1.0, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["similarity against candidate source passages", "proposed pipeline computes lexical overlap", "vector similarity against candidate source", "pipeline computes lexical overlap phrase", "computes lexical overlap phrase overlap"]}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "A compact auditing pipeline for academic prose can compare each sentence against a local literature corpus.", "vector_similarity": 0.03015269018655764, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.015454140751374116, "lexical_overlap": 0.03571428571428571, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": [], "triggered_categories": [], "phrase_pattern_score": 0.0, "semantic_thinness_score": 0.033333333333333326, "style_shift_score": 0.01537255876256611, "smoothness_score": 0.986, "heuristic_classifier_score": 0.013074511752513219, "content_ratio": 0.8666666666666667, "abstract_word_ratio": 0.0, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": ""}}}]}, {"paragraph_id": "methods.par_004", "paragraph_index": 4, "section": "Methods", "subsection": "", "line_start": 15, "line_end": 15, "location_label": "Methods \u00b7 L15", "paragraph_band": "low", "combined_risk": 0.385, "plagiarism_risk_score": 0.385, "ai_rhetoric_risk_score": 0.302, "sentence_ids": ["methods.par_004.sent_001", "methods.par_004.sent_002"], "sentence_count": 2, "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "display_text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "rows": [{"order": 6, "sentence_id": "methods.par_004.sent_001", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 1, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L15", "line_start": 15, "line_end": 15, "source_context_label": "Context L15", "line_label": "L15", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "plagiarism_risk_score": 0.051, "ai_rhetoric_risk_score": 0.302, "combined_risk": 0.302, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "AI-assisted tell evidence available: empty_transition=0.50.", "ai_tell_summary": "empty_transition=0.50", "ai_tell_subscores": {"empty_transition": 0.5, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.0, "low_specificity": 0.0}, "triggered_phrases": ["additionally"], "triggered_categories": ["empty_transition"], "top_match": {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.05013641242112815, "lexical_overlap": 0.11538461538461539, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.05013641242112815, "lexical_overlap": 0.11538461538461539, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.04192146158087854, "lexical_overlap": 0.08695652173913043, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.030617621703955312, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.05}, {"label": "Lexical overlap", "value": 0.115}, {"label": "Rare phrase overlap", "value": 0.0}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.333}, {"label": "Semantic thinness", "value": 0.217}, {"label": "Style shift", "value": 0.037}, {"label": "Smoothness", "value": 0.994}, {"label": "Heuristic classifier", "value": 0.239}, {"label": "Empty transition", "value": 0.5}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.0}, {"label": "Low specificity", "value": 0.0}, {"label": "Content ratio", "value": 0.733}, {"label": "Abstract word ratio", "value": 0.0}]}, "all_data": {"sentence": {"sentence_id": "methods.par_004.sent_001", "clean_text": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "source_context_char_start": 840, "source_context_char_end": 1044, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 1, "char_start": 0, "char_end": 107}, "plagiarism_risk_score": 0.051407539435661516, "ai_rhetoric_risk_score": 0.30158068415548933, "plagiarism_evidence": {"vector_similarity_score": 0.05013641242112815, "lexical_overlap_score": 0.11538461538461539, "rare_phrase_overlap_score": 0.0, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.05013641242112815, "lexical_overlap": 0.11538461538461539, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.04192146158087854, "lexical_overlap": 0.08695652173913043, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "The proposed pipeline computes lexical overlap, phrase overlap, and vector similarity against candidate source passages.", "vector_similarity": 0.030617621703955312, "lexical_overlap": 0.07692307692307693, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["additionally"], "triggered_categories": ["empty_transition"], "phrase_pattern_score": 0.3333333333333333, "semantic_thinness_score": 0.21666666666666667, "style_shift_score": 0.037298564343133306, "smoothness_score": 0.99375, "heuristic_classifier_score": 0.2391263795352933, "content_ratio": 0.7333333333333333, "abstract_word_ratio": 0.0, "empty_transition_score": 0.5, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.0, "low_specificity_score": 0.0, "finding_summary": "empty_transition=0.50"}}}, {"order": 7, "sentence_id": "methods.par_004.sent_002", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 2, "section": "Methods", "subsection": "", "location_label": "Methods \u00b7 L15", "line_start": 15, "line_end": 15, "source_context_label": "Context L15", "line_label": "L15", "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "clean_text": "This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "plagiarism_risk_score": 0.385, "ai_rhetoric_risk_score": 0.292, "combined_risk": 0.385, "plagiarism_band": "low", "ai_band": "low", "combined_band": "low", "has_external_match": true, "has_ai_trigger": true, "is_flagged": false, "flag_reason": "External match evidence is available for review.", "summary": "AI-assisted tell evidence available: balanced_summary=0.50.", "ai_tell_summary": "balanced_summary=0.50", "ai_tell_subscores": {"empty_transition": 0.0, "framework_boilerplate": 0.0, "unsupported_confidence": 0.0, "balanced_summary": 0.5, "low_specificity": 0.221}, "triggered_phrases": ["this highlights the fact that"], "triggered_categories": ["balanced_but_empty_summary"], "top_match": {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.23572831160700639, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["this highlights the fact that", "this highlights the fact", "highlights the fact that", "this highlights the", "highlights the fact"]}, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.23572831160700639, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["this highlights the fact that", "this highlights the fact", "highlights the fact that", "this highlights the", "highlights the fact"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.04896762356290806, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.03635512795453622, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}], "feature_breakdown": {"plagiarism": [{"label": "Vector similarity", "value": 0.236}, {"label": "Lexical overlap", "value": 0.217}, {"label": "Rare phrase overlap", "value": 0.9}, {"label": "Boilerplate discount", "value": 0.0}], "ai": [{"label": "Phrase-pattern score", "value": 0.333}, {"label": "Semantic thinness", "value": 0.167}, {"label": "Style shift", "value": 0.056}, {"label": "Smoothness", "value": 0.994}, {"label": "Heuristic classifier", "value": 0.228}, {"label": "Empty transition", "value": 0.0}, {"label": "Framework boilerplate", "value": 0.0}, {"label": "Unsupported confidence", "value": 0.0}, {"label": "Balanced summary", "value": 0.5}, {"label": "Low specificity", "value": 0.221}, {"label": "Content ratio", "value": 0.714}, {"label": "Abstract word ratio", "value": 0.071}]}, "all_data": {"sentence": {"sentence_id": "methods.par_004.sent_002", "clean_text": "This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_fragment": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "raw_tex_context": "Additionally, the system measures whether a sentence sounds smoother and more formulaic than its neighbors. This highlights the fact that some academic filler language is more irritating than informative.", "source_context_char_start": 840, "source_context_char_end": 1044, "source_file": "examples\\sample_tex_project\\sections\\methods.tex", "section": "Methods", "subsection": "", "paragraph_id": "methods.par_004", "paragraph_index": 4, "sentence_index": 2, "char_start": 108, "char_end": 204}, "plagiarism_risk_score": 0.3854255663101094, "ai_rhetoric_risk_score": 0.2917448157950954, "plagiarism_evidence": {"vector_similarity_score": 0.23572831160700639, "lexical_overlap_score": 0.21739130434782608, "rare_phrase_overlap_score": 0.9, "boilerplate_discount": 0.0, "top_matches": [{"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "Additionally, this highlights the fact that formulaic transitions often sound polished while saying very little.", "vector_similarity": 0.23572831160700639, "lexical_overlap": 0.21739130434782608, "rare_phrase_overlap": 0.9, "overlapping_phrases": ["this highlights the fact that", "this highlights the fact", "highlights the fact that", "this highlights the", "highlights the fact"]}, {"source_path": "examples\\corpus\\boilerplate_note.txt", "source_label": "boilerplate_note", "matched_text": "It is important to note that a robust framework can help reviewers inspect suspicious language.", "vector_similarity": 0.04896762356290806, "lexical_overlap": 0.09090909090909091, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}, {"source_path": "examples\\corpus\\similar_paper.txt", "source_label": "similar_paper", "matched_text": "Sentence-level evidence is easier to inspect than a single document-wide detector label.", "vector_similarity": 0.03635512795453622, "lexical_overlap": 0.043478260869565216, "rare_phrase_overlap": 0.0, "overlapping_phrases": []}]}, "ai_evidence": {"triggered_phrases": ["this highlights the fact that"], "triggered_categories": ["balanced_but_empty_summary"], "phrase_pattern_score": 0.3333333333333333, "semantic_thinness_score": 0.16678571428571426, "style_shift_score": 0.055759263715080304, "smoothness_score": 0.9944444444444445, "heuristic_classifier_score": 0.22785423369539698, "content_ratio": 0.7142857142857143, "abstract_word_ratio": 0.07142857142857142, "empty_transition_score": 0.0, "framework_boilerplate_score": 0.0, "unsupported_confidence_score": 0.0, "balanced_summary_score": 0.5, "low_specificity_score": 0.22142857142857142, "finding_summary": "balanced_summary=0.50"}}}]}], "outline": [{"label": "Introduction", "line_start": 4, "line_end": 8, "sentence_count": 4, "paragraph_count": 2, "flagged_count": 1, "suspicious_paragraph_count": 2, "paragraph_ids": ["introduction.par_001", "introduction.par_002"], "subsections": []}, {"label": "Methods", "line_start": 11, "line_end": 15, "sentence_count": 4, "paragraph_count": 2, "flagged_count": 1, "suspicious_paragraph_count": 1, "paragraph_ids": ["methods.par_003", "methods.par_004"], "subsections": []}], "suspicious_spans": [{"span_id": "span-1-2-4", "label": "Introduction \u00b7 P1-P2", "section": "Introduction", "paragraph_ids": ["introduction.par_001", "introduction.par_002"], "sentence_ids": ["introduction.par_001.sent_001", "introduction.par_001.sent_002", "introduction.par_002.sent_001", "introduction.par_002.sent_002"], "line_start": 4, "line_end": 8, "line_label": "L4-L8", "max_combined_risk": 0.617, "max_plagiarism_risk": 0.617, "max_ai_risk": 0.508, "flagged_count": 1, "paragraph_count": 2, "band": "medium"}, {"span_id": "span-3-4-11", "label": "Methods \u00b7 P3-P4", "section": "Methods", "paragraph_ids": ["methods.par_003", "methods.par_004"], "sentence_ids": ["methods.par_003.sent_001", "methods.par_003.sent_002", "methods.par_004.sent_001", "methods.par_004.sent_002"], "line_start": 11, "line_end": 15, "line_label": "L11-L15", "max_combined_risk": 0.925, "max_plagiarism_risk": 0.925, "max_ai_risk": 0.302, "flagged_count": 1, "paragraph_count": 2, "band": "high"}], "filters": {"sections": ["Introduction", "Methods"], "default_plagiarism_threshold": 0.45, "default_ai_threshold": 0.45, "flagged_threshold": 0.6}, "legend": {"plagiarism_label": "Estimated overlap risk", "ai_label": "Estimated AI-assisted tell risk", "caveat": "These scores are heuristic review aids. They summarize sentence-level overlap and AI-assisted tell signals, not definitive findings of authorship, plagiarism, or misconduct."}};
+    window.__PF_APP_CONFIG__ = {"mode": "report", "page_title": "paper-forensics review report"};
+  </script>
+  <script>(function () {
+  "use strict";
+
+  const initialPayload = window.__PF_INITIAL_PAYLOAD__ || null;
+  const appConfig = window.__PF_APP_CONFIG__ || {};
+
+  const elements = {
+    intakeView: document.getElementById("intake-view"),
+    loadingView: document.getElementById("loading-view"),
+    errorView: document.getElementById("error-view"),
+    workspaceView: document.getElementById("workspace-view"),
+    topbarStatus: document.getElementById("topbar-status"),
+    uploadInput: document.getElementById("upload-input"),
+    chooseFile: document.getElementById("choose-file"),
+    analyzeButton: document.getElementById("analyze-button"),
+    dropzone: document.getElementById("dropzone"),
+    uploadSummary: document.getElementById("upload-summary"),
+    corpusLabel: document.getElementById("corpus-label"),
+    loadingMessage: document.getElementById("loading-message"),
+    loadingProgress: document.getElementById("loading-progress"),
+    loadingSteps: document.getElementById("loading-steps"),
+    errorMessage: document.getElementById("error-message"),
+    errorReset: document.getElementById("error-reset"),
+    documentTitle: document.getElementById("document-title"),
+    documentSubtitle: document.getElementById("document-subtitle"),
+    summaryGrid: document.getElementById("summary-grid"),
+    aiTellOverview: document.getElementById("ai-tell-overview"),
+    filterSection: document.getElementById("filter-section"),
+    filterPlagiarism: document.getElementById("filter-plagiarism"),
+    filterPlagiarismValue: document.getElementById("filter-plagiarism-value"),
+    filterAi: document.getElementById("filter-ai"),
+    filterAiValue: document.getElementById("filter-ai-value"),
+    filterFlagged: document.getElementById("filter-flagged"),
+    filterMatches: document.getElementById("filter-matches"),
+    filterTriggers: document.getElementById("filter-triggers"),
+    filterSearch: document.getElementById("filter-search"),
+    spanNavigator: document.getElementById("span-navigator"),
+    outlineNav: document.getElementById("outline-nav"),
+    legendCaveat: document.getElementById("legend-caveat"),
+    viewMode: document.getElementById("view-mode"),
+    textMode: document.getElementById("text-mode"),
+    densityMode: document.getElementById("density-mode"),
+    sortMode: document.getElementById("sort-mode"),
+    resultCount: document.getElementById("result-count"),
+    documentList: document.getElementById("document-list"),
+    inspectorTitle: document.getElementById("inspector-title"),
+    inspectorLocation: document.getElementById("inspector-location"),
+    inspectorEmpty: document.getElementById("inspector-empty"),
+    inspectorContent: document.getElementById("inspector-content"),
+    exportActions: document.getElementById("export-actions"),
+    scorecards: document.getElementById("scorecards"),
+    inspectorSummary: document.getElementById("inspector-summary"),
+    flagReason: document.getElementById("flag-reason"),
+    plagiarismFeatures: document.getElementById("plagiarism-features"),
+    aiFeatures: document.getElementById("ai-features"),
+    aiTellSummary: document.getElementById("ai-tell-summary"),
+    matchList: document.getElementById("match-list"),
+    triggeredPhrases: document.getElementById("triggered-phrases"),
+    triggeredCategories: document.getElementById("triggered-categories"),
+    sourceContext: document.getElementById("source-context"),
+    scoringNote: document.getElementById("scoring-note"),
+  };
+
+  const state = {
+    mode: appConfig.mode || "report",
+    uploadFile: null,
+    currentJobId: null,
+    payload: initialPayload,
+    selectedSentenceId: initialPayload && initialPayload.rows[0] ? initialPayload.rows[0].sentence_id : null,
+    filters: {
+      section: "all",
+      plagiarism: 0,
+      ai: 0,
+      flaggedOnly: false,
+      matchesOnly: false,
+      triggersOnly: false,
+      search: "",
+    },
+    viewMode: "sentence",
+    textMode: "clean",
+    density: "comfortable",
+    sortMode: "document",
+  };
+
+  const pollingTimers = new Set();
+
+  function init() {
+    bindStaticEvents();
+    if (state.payload) {
+      setView("workspace");
+      renderWorkspace(true);
+    } else if (state.mode === "app") {
+      setView("intake");
+      elements.corpusLabel.textContent = appConfig.corpus_label || "Corpus not configured";
+    } else {
+      setView("error");
+      elements.errorMessage.textContent = "No review payload was available for this report.";
+    }
+  }
+
+  function bindStaticEvents() {
+    if (elements.chooseFile) {
+      elements.chooseFile.addEventListener("click", () => elements.uploadInput.click());
+    }
+    if (elements.uploadInput) {
+      elements.uploadInput.addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (file) {
+          setUploadFile(file);
+        }
+      });
+    }
+    if (elements.dropzone) {
+      ["dragenter", "dragover"].forEach((eventName) => {
+        elements.dropzone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          elements.dropzone.classList.add("is-dragging");
+        });
+      });
+      ["dragleave", "drop"].forEach((eventName) => {
+        elements.dropzone.addEventListener(eventName, (event) => {
+          event.preventDefault();
+          elements.dropzone.classList.remove("is-dragging");
+        });
+      });
+      elements.dropzone.addEventListener("drop", (event) => {
+        const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (file) {
+          setUploadFile(file);
+        }
+      });
+      elements.dropzone.addEventListener("click", () => elements.uploadInput.click());
+      elements.dropzone.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          elements.uploadInput.click();
+        }
+      });
+    }
+    if (elements.analyzeButton) {
+      elements.analyzeButton.addEventListener("click", startAnalysis);
+    }
+    if (elements.errorReset) {
+      elements.errorReset.addEventListener("click", () => {
+        setView("intake");
+        elements.errorMessage.textContent = "";
+      });
+    }
+
+    [
+      elements.filterSection,
+      elements.filterPlagiarism,
+      elements.filterAi,
+      elements.filterFlagged,
+      elements.filterMatches,
+      elements.filterTriggers,
+      elements.filterSearch,
+      elements.viewMode,
+      elements.textMode,
+      elements.densityMode,
+      elements.sortMode,
+    ].forEach((element) => {
+      if (!element) return;
+      element.addEventListener("input", handleControlChange);
+      element.addEventListener("change", handleControlChange);
+    });
+
+    document.addEventListener("keydown", handleKeydown);
+  }
+
+  function setUploadFile(file) {
+    state.uploadFile = file;
+    elements.uploadSummary.innerHTML = `
+      <div><strong>${escapeHtml(file.name)}</strong></div>
+      <div class="pf-muted">Size: ${formatFileSize(file.size)} · Type: ${escapeHtml(file.type || "unknown")}</div>
+      <div class="pf-muted">Supported formats: .tex, .zip, .tar, .tar.gz, .tgz</div>
+    `;
+    elements.analyzeButton.disabled = false;
+  }
+
+  function setView(view) {
+    const visibility = {
+      intake: view === "intake",
+      loading: view === "loading",
+      error: view === "error",
+      workspace: view === "workspace",
+    };
+    elements.intakeView.hidden = !visibility.intake;
+    elements.loadingView.hidden = !visibility.loading;
+    elements.errorView.hidden = !visibility.error;
+    elements.workspaceView.hidden = !visibility.workspace;
+  }
+
+  async function startAnalysis() {
+    if (!state.uploadFile) return;
+    setView("loading");
+    updateLoadingState(0.12, "Uploading manuscript", 0);
+    try {
+      const form = new FormData();
+      form.append("manuscript", state.uploadFile, state.uploadFile.name);
+      const response = await fetch(appConfig.create_job_endpoint || "/api/jobs", {
+        method: "POST",
+        body: form,
+      });
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}.`);
+      }
+      const payload = await response.json();
+      state.currentJobId = payload.job_id;
+      pollJob(payload.job_id);
+    } catch (error) {
+      showError(error.message || "Unable to start analysis.");
+    }
+  }
+
+  function pollJob(jobId) {
+    const tick = async () => {
+      try {
+        const response = await fetch((appConfig.job_status_prefix || "/api/jobs/") + encodeURIComponent(jobId), {
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          throw new Error(`Status polling failed with ${response.status}.`);
+        }
+        const payload = await response.json();
+        const stageIndex = stageIndexFor(payload.stage);
+        updateLoadingState(payload.progress || estimatedProgress(stageIndex), payload.message || "Analyzing document", stageIndex);
+        if (payload.status === "completed" && payload.review_payload) {
+          state.payload = payload.review_payload;
+          state.selectedSentenceId = state.payload.rows[0] ? state.payload.rows[0].sentence_id : null;
+          setView("workspace");
+          renderWorkspace(true);
+          return;
+        }
+        if (payload.status === "failed") {
+          showError(payload.error || "Analysis failed.");
+          return;
+        }
+        const timer = window.setTimeout(tick, 850);
+        pollingTimers.add(timer);
+      } catch (error) {
+        showError(error.message || "Unable to poll analysis status.");
+      }
+    };
+    tick();
+  }
+
+  function stageIndexFor(stage) {
+    const stages = ["preparing", "resolving", "analyzing", "finalizing"];
+    const index = stages.indexOf(stage);
+    return index >= 0 ? index : 0;
+  }
+
+  function estimatedProgress(stageIndex) {
+    return [0.16, 0.35, 0.72, 0.95][stageIndex] || 0.12;
+  }
+
+  function updateLoadingState(progress, message, activeIndex) {
+    elements.loadingMessage.textContent = message;
+    elements.loadingProgress.style.width = `${Math.round(progress * 100)}%`;
+    Array.from(elements.loadingSteps.children).forEach((item, index) => {
+      item.classList.toggle("is-active", index === activeIndex);
+    });
+  }
+
+  function showError(message) {
+    clearTimers();
+    setView("error");
+    elements.errorMessage.textContent = message;
+  }
+
+  function clearTimers() {
+    pollingTimers.forEach((timer) => window.clearTimeout(timer));
+    pollingTimers.clear();
+  }
+
+  function handleControlChange() {
+    if (!state.payload) return;
+    state.filters.section = elements.filterSection.value;
+    state.filters.plagiarism = Number(elements.filterPlagiarism.value);
+    state.filters.ai = Number(elements.filterAi.value);
+    state.filters.flaggedOnly = elements.filterFlagged.checked;
+    state.filters.matchesOnly = elements.filterMatches.checked;
+    state.filters.triggersOnly = elements.filterTriggers.checked;
+    state.filters.search = elements.filterSearch.value.trim().toLowerCase();
+    state.viewMode = elements.viewMode.value;
+    state.textMode = elements.textMode.value;
+    state.density = elements.densityMode.value;
+    state.sortMode = elements.sortMode.value;
+    renderWorkspace(false);
+  }
+
+  function renderWorkspace(firstRender) {
+    const payload = state.payload;
+    if (!payload) return;
+
+    elements.topbarStatus.textContent = "Review workspace ready";
+    elements.documentTitle.textContent = payload.document.title;
+    elements.documentSubtitle.textContent = `${payload.document.input_name} · ${payload.document.sentence_count} sentences · ${payload.document.paragraph_count} paragraphs`;
+    elements.legendCaveat.textContent = payload.legend.caveat;
+
+    if (firstRender) {
+      populateSectionFilter(payload.filters.sections);
+      elements.filterPlagiarism.value = String(payload.filters.default_plagiarism_threshold);
+      elements.filterAi.value = String(payload.filters.default_ai_threshold);
+      state.filters.plagiarism = Number(elements.filterPlagiarism.value);
+      state.filters.ai = Number(elements.filterAi.value);
+    }
+
+    elements.filterPlagiarismValue.textContent = Number(elements.filterPlagiarism.value).toFixed(2);
+    elements.filterAiValue.textContent = Number(elements.filterAi.value).toFixed(2);
+    renderSummary(payload);
+    renderOutline(payload);
+    renderSpans(payload);
+    renderDocument(payload);
+    renderInspector(payload);
+    renderExports(payload);
+  }
+
+  function populateSectionFilter(sections) {
+    elements.filterSection.innerHTML = `<option value="all">All sections</option>${sections
+      .map((section) => `<option value="${escapeHtml(section)}">${escapeHtml(section)}</option>`)
+      .join("")}`;
+  }
+
+  function renderSummary(payload) {
+    const metrics = payload.metrics;
+    const cards = [
+      ["Flagged sentences", metrics.flagged_sentence_count],
+      ["External matches", metrics.external_match_count],
+      ["AI tell triggers", metrics.triggered_sentence_count],
+      ["Suspicious spans", metrics.suspicious_span_count],
+    ];
+    elements.summaryGrid.innerHTML = cards
+      .map(
+        ([label, value]) => `
+          <div class="pf-summary-card">
+            <span class="pf-muted">${escapeHtml(label)}</span>
+            <strong>${escapeHtml(String(value))}</strong>
+          </div>
+        `
+      )
+      .join("");
+    const overview = payload.ai_tell_overview || {};
+    const dominant = overview.dominant_categories || [];
+    const topFindings = overview.top_findings || [];
+    if (!dominant.length && !topFindings.length) {
+      elements.aiTellOverview.innerHTML = `<div class="pf-empty">No dominant AI-assisted tell categories were summarized for this document.</div>`;
+      return;
+    }
+    const dominantMarkup = dominant.length
+      ? `<div class="pf-pill-list">${dominant
+          .map(
+            (item) =>
+              `<span class="pf-pill">${escapeHtml(item.label)} (${escapeHtml(String(item.count))})</span>`
+          )
+          .join("")}</div>`
+      : `<div class="pf-empty">No dominant categories recorded.</div>`;
+    const findingMarkup = topFindings.length
+      ? topFindings
+          .slice(0, 3)
+          .map(
+            (finding) => `
+              <div class="pf-overview-item">
+                <strong>${escapeHtml(finding.sentence_id)}</strong>
+                <div class="pf-muted">${escapeHtml(finding.finding_summary || "No summary")}</div>
+              </div>
+            `
+          )
+          .join("")
+      : `<div class="pf-empty">No AI-assisted tell findings were summarized.</div>`;
+    elements.aiTellOverview.innerHTML = `
+      <div class="pf-overview-block">
+        <div class="pf-muted">Dominant categories</div>
+        ${dominantMarkup}
+      </div>
+      <div class="pf-overview-block">
+        <div class="pf-muted">Top findings</div>
+        ${findingMarkup}
+      </div>
+    `;
+  }
+
+  function renderOutline(payload) {
+    elements.outlineNav.innerHTML = payload.outline
+      .map((section) => {
+        const subsectionMarkup = section.subsections
+          .map(
+            (subsection) => `
+              <button type="button" class="pf-nav-item" data-outline-target="${escapeHtml(subsection.paragraph_ids[0] || "")}">
+                <strong>${escapeHtml(subsection.label)}</strong>
+                <span class="pf-nav-item__meta">${subsection.sentence_count} sentences · ${subsection.flagged_count} flagged</span>
+              </button>
+            `
+          )
+          .join("");
+        return `
+          <button type="button" class="pf-nav-item" data-outline-target="${escapeHtml(section.paragraph_ids[0] || "")}">
+            <strong>${escapeHtml(section.label)}</strong>
+            <span class="pf-nav-item__meta">${section.sentence_count} sentences · ${section.flagged_count} flagged · ${escapeHtml(
+              lineLabel(section.line_start, section.line_end)
+            )}</span>
+          </button>
+          ${subsectionMarkup}
+        `;
+      })
+      .join("");
+    elements.outlineNav.querySelectorAll("[data-outline-target]").forEach((button) => {
+      button.addEventListener("click", () => jumpToParagraph(button.getAttribute("data-outline-target")));
+    });
+  }
+
+  function renderSpans(payload) {
+    if (!payload.suspicious_spans.length) {
+      elements.spanNavigator.innerHTML = `<div class="pf-empty">No suspicious spans met the current review baseline.</div>`;
+      return;
+    }
+    elements.spanNavigator.innerHTML = payload.suspicious_spans
+      .map(
+        (span) => `
+          <button type="button" class="pf-nav-item" data-span-id="${escapeHtml(span.span_id)}">
+            <strong>${escapeHtml(span.label)}</strong>
+            <span class="pf-nav-item__meta">${escapeHtml(span.line_label)} · max risk ${span.max_combined_risk.toFixed(
+              2
+            )}</span>
+          </button>
+        `
+      )
+      .join("");
+    elements.spanNavigator.querySelectorAll("[data-span-id]").forEach((button) => {
+      button.addEventListener("click", () => jumpToSpan(button.getAttribute("data-span-id")));
+    });
+  }
+
+  function renderDocument(payload) {
+    const visibleRows = getVisibleRows(payload);
+    ensureSelectedVisible(visibleRows, payload.rows);
+    elements.resultCount.textContent = `${visibleRows.length} of ${payload.rows.length} sentences shown`;
+    elements.documentList.dataset.density = state.density;
+
+    if (!visibleRows.length) {
+      elements.documentList.innerHTML = `<div class="pf-empty">No sentences match the current filters. Lower a threshold or widen the search to continue review.</div>`;
+      return;
+    }
+
+    if (state.viewMode === "paragraph") {
+      const paragraphs = getVisibleParagraphs(payload, visibleRows);
+      elements.documentList.innerHTML = paragraphs.map((paragraph) => paragraphCard(paragraph)).join("");
+      bindParagraphInteractions();
+      return;
+    }
+
+    const groups = groupRowsBySection(visibleRows);
+    elements.documentList.innerHTML = groups
+      .map(
+        (group) => `
+          <section class="pf-group">
+            <h3>${escapeHtml(group.section)}</h3>
+            ${group.rows.map((row) => sentenceRow(row)).join("")}
+          </section>
+        `
+      )
+      .join("");
+    bindSentenceInteractions();
+  }
+
+  function groupRowsBySection(rows) {
+    const groups = [];
+    rows.forEach((row) => {
+      const last = groups[groups.length - 1];
+      if (!last || last.section !== row.section) {
+        groups.push({ section: row.section || "Untitled", rows: [row] });
+      } else {
+        last.rows.push(row);
+      }
+    });
+    return groups;
+  }
+
+  function sentenceRow(row) {
+    const text = state.textMode === "raw" ? row.raw_tex_fragment : row.clean_text;
+    const activeClass = row.sentence_id === state.selectedSentenceId ? " is-active" : "";
+    const triggerPills = row.triggered_phrases.length
+      ? row.triggered_phrases.slice(0, 3).map((phrase) => `<span class="pf-pill">${escapeHtml(phrase)}</span>`).join("")
+      : `<span class="pf-pill">No style trigger</span>`;
+    return `
+      <article class="pf-row${activeClass}" data-sentence-id="${escapeHtml(row.sentence_id)}" data-paragraph-id="${escapeHtml(
+      row.paragraph_id
+    )}" tabindex="0">
+        <div class="pf-row__body">
+          <div class="pf-row__meta">
+            <div class="pf-row__identity">
+              <strong>${escapeHtml(row.sentence_id)}</strong>
+              <span>${escapeHtml(row.location_label)}</span>
+            </div>
+            <div class="pf-badges">
+              <span class="pf-badge pf-badge--plagiarism">${escapeHtml(appConfig.plagiarism_label || "Overlap")} ${row.plagiarism_risk_score.toFixed(
+      2
+    )}</span>
+              <span class="pf-badge pf-badge--ai">${escapeHtml(aiLabel())} ${row.ai_rhetoric_risk_score.toFixed(
+      2
+    )}</span>
+              ${row.is_flagged ? `<span class="pf-badge pf-badge--flag">Review required</span>` : ""}
+            </div>
+          </div>
+          <div class="pf-row__text">${escapeHtml(text)}</div>
+          <div class="pf-row__summary">${escapeHtml(row.summary)}</div>
+          <div class="pf-row__footer">
+            <div class="pf-pill-list">${triggerPills}</div>
+            <div class="pf-muted">${escapeHtml(row.source_context_label)}</div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function paragraphCard(paragraph) {
+    const activeClass = paragraph.sentence_ids.includes(state.selectedSentenceId) ? " is-active" : "";
+    const text = state.textMode === "raw" ? paragraph.raw_tex_context : paragraph.display_text;
+    const sentenceMarkup = paragraph.rows
+      .map((row) => {
+        const activeSentence = row.sentence_id === state.selectedSentenceId ? " is-active" : "";
+        return `
+          <div class="pf-paragraph__sentence${activeSentence}" data-sentence-id="${escapeHtml(row.sentence_id)}">
+            <strong>${escapeHtml(row.sentence_id)}</strong>
+            <div class="pf-muted">${escapeHtml(state.textMode === "raw" ? row.raw_tex_fragment : row.clean_text)}</div>
+          </div>
+        `;
+      })
+      .join("");
+    return `
+      <article class="pf-paragraph${activeClass}" data-paragraph-id="${escapeHtml(paragraph.paragraph_id)}">
+        <div class="pf-paragraph__body">
+          <div class="pf-paragraph__meta">
+            <div class="pf-paragraph__identity">
+              <strong>${escapeHtml(paragraph.paragraph_id)}</strong>
+              <span>${escapeHtml(paragraph.location_label)}</span>
+            </div>
+            <div class="pf-badges">
+              <span class="pf-badge pf-badge--plagiarism">Overlap ${paragraph.plagiarism_risk_score.toFixed(2)}</span>
+              <span class="pf-badge pf-badge--ai">${escapeHtml(aiLabel())} ${paragraph.ai_rhetoric_risk_score.toFixed(2)}</span>
+              ${paragraph.is_flagged ? `<span class="pf-badge pf-badge--flag">Review required</span>` : ""}
+            </div>
+          </div>
+          <div class="pf-paragraph__text">${escapeHtml(text)}</div>
+          <div class="pf-paragraph__summary">${escapeHtml(
+            paragraph.has_external_match || paragraph.has_ai_trigger
+              ? "Evidence is present within this paragraph. Select a sentence for detailed inspection."
+              : "Lower-signal paragraph. Select a sentence if context review is needed."
+          )}</div>
+          <div class="pf-paragraph__sentences">${sentenceMarkup}</div>
+        </div>
+      </article>
+    `;
+  }
+
+  function bindSentenceInteractions() {
+    elements.documentList.querySelectorAll("[data-sentence-id]").forEach((node) => {
+      node.addEventListener("click", () => selectSentence(node.getAttribute("data-sentence-id"), true));
+    });
+  }
+
+  function bindParagraphInteractions() {
+    elements.documentList.querySelectorAll(".pf-paragraph__sentence[data-sentence-id]").forEach((node) => {
+      node.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selectSentence(node.getAttribute("data-sentence-id"), true);
+      });
+    });
+    elements.documentList.querySelectorAll(".pf-paragraph[data-paragraph-id]").forEach((paragraphNode) => {
+      paragraphNode.addEventListener("click", () => {
+        const firstSentence = paragraphNode.querySelector("[data-sentence-id]");
+        if (firstSentence) {
+          selectSentence(firstSentence.getAttribute("data-sentence-id"), true);
+        }
+      });
+    });
+  }
+
+  function renderInspector(payload) {
+    const row = findRowById(payload.rows, state.selectedSentenceId);
+    if (!row) {
+      elements.inspectorEmpty.hidden = false;
+      elements.inspectorContent.hidden = true;
+      elements.inspectorTitle.textContent = "Select a sentence";
+      elements.inspectorLocation.textContent = "Sentence-level evidence appears here.";
+      return;
+    }
+
+    elements.inspectorEmpty.hidden = true;
+    elements.inspectorContent.hidden = false;
+    elements.inspectorTitle.textContent = row.sentence_id;
+    elements.inspectorLocation.textContent = `${row.location_label} · ${shortName(row.source_file)}`;
+    elements.topbarStatus.textContent = `${row.sentence_id} selected`;
+    elements.scorecards.innerHTML = `
+      <div class="pf-scorecard pf-scorecard--plagiarism">
+        <span class="pf-muted">${escapeHtml(plagiarismLabel())}</span>
+        <strong>${row.plagiarism_risk_score.toFixed(2)}</strong>
+      </div>
+      <div class="pf-scorecard pf-scorecard--ai">
+        <span class="pf-muted">${escapeHtml(aiLabel())}</span>
+        <strong>${row.ai_rhetoric_risk_score.toFixed(2)}</strong>
+      </div>
+    `;
+    elements.inspectorSummary.textContent = row.summary;
+    elements.flagReason.textContent = row.flag_reason;
+    elements.plagiarismFeatures.innerHTML = featureMarkup(row.feature_breakdown.plagiarism);
+    elements.aiTellSummary.textContent = row.ai_tell_summary
+      ? `Sentence summary: ${row.ai_tell_summary}`
+      : "No AI-assisted tell summary was generated for this sentence.";
+    elements.aiFeatures.innerHTML = featureMarkup(row.feature_breakdown.ai);
+    elements.matchList.innerHTML = row.top_matches.length
+      ? row.top_matches.map((match) => matchCard(match)).join("")
+      : `<div class="pf-empty">No external matches were returned for this sentence.</div>`;
+    elements.triggeredPhrases.innerHTML = row.triggered_phrases.length
+      ? row.triggered_phrases.map((phrase) => `<span class="pf-pill">${escapeHtml(phrase)}</span>`).join("")
+      : `<span class="pf-pill">No AI-assisted tell phrase triggers</span>`;
+    elements.triggeredCategories.innerHTML = row.triggered_categories.length
+      ? row.triggered_categories.map((category) => `<span class="pf-pill">${escapeHtml(category)}</span>`).join("")
+      : `<span class="pf-pill">No trigger categories</span>`;
+    elements.sourceContext.textContent = row.raw_tex_context;
+    elements.scoringNote.textContent =
+      "Estimated risks summarize heuristic feature combinations. Review the cited evidence, neighboring prose, and manuscript context before making any determination.";
+  }
+
+  function renderExports(payload) {
+    const files = payload.document.generated_files || {};
+    const entries = Object.entries(files);
+    if (!entries.length) {
+      elements.exportActions.innerHTML = "";
+      return;
+    }
+    elements.exportActions.innerHTML = entries
+      .map(([label, href]) => {
+        const text = label.toUpperCase();
+        if (typeof href === "string" && /^(\/|https?:|file:|[A-Za-z]:\\)/.test(href)) {
+          return `<a class="pf-button pf-button--secondary" href="${escapeAttribute(href)}" target="_blank" rel="noreferrer">${escapeHtml(
+            text
+          )}</a>`;
+        }
+        return "";
+      })
+      .join("");
+  }
+
+  function getVisibleRows(payload) {
+    const sectionFilter = state.filters.section;
+    const search = state.filters.search;
+    let rows = payload.rows.filter((row) => {
+      if (sectionFilter !== "all" && row.section !== sectionFilter) return false;
+      if (row.plagiarism_risk_score < state.filters.plagiarism) return false;
+      if (row.ai_rhetoric_risk_score < state.filters.ai) return false;
+      if (state.filters.flaggedOnly && !row.is_flagged) return false;
+      if (state.filters.matchesOnly && !row.has_external_match) return false;
+      if (state.filters.triggersOnly && !row.has_ai_trigger) return false;
+      if (search && !searchableText(row).includes(search)) return false;
+      return true;
+    });
+
+    rows = rows.slice().sort((left, right) => {
+      if (state.sortMode === "combined") {
+        return right.combined_risk - left.combined_risk || left.order - right.order;
+      }
+      if (state.sortMode === "plagiarism") {
+        return right.plagiarism_risk_score - left.plagiarism_risk_score || left.order - right.order;
+      }
+      if (state.sortMode === "ai") {
+        return right.ai_rhetoric_risk_score - left.ai_rhetoric_risk_score || left.order - right.order;
+      }
+      return left.order - right.order;
+    });
+    return rows;
+  }
+
+  function getVisibleParagraphs(payload, visibleRows) {
+    const visibleSet = new Set(visibleRows.map((row) => row.sentence_id));
+    const paragraphs = payload.paragraphs
+      .filter((paragraph) => paragraph.rows.some((row) => visibleSet.has(row.sentence_id)))
+      .map((paragraph) => ({
+        ...paragraph,
+        rows: paragraph.rows.filter((row) => visibleSet.has(row.sentence_id)),
+        sentence_ids: paragraph.rows.filter((row) => visibleSet.has(row.sentence_id)).map((row) => row.sentence_id),
+      }));
+
+    paragraphs.sort((left, right) => {
+      if (state.sortMode === "combined") {
+        return right.combined_risk - left.combined_risk || left.paragraph_index - right.paragraph_index;
+      }
+      if (state.sortMode === "plagiarism") {
+        return right.plagiarism_risk_score - left.plagiarism_risk_score || left.paragraph_index - right.paragraph_index;
+      }
+      if (state.sortMode === "ai") {
+        return right.ai_rhetoric_risk_score - left.ai_rhetoric_risk_score || left.paragraph_index - right.paragraph_index;
+      }
+      return left.paragraph_index - right.paragraph_index;
+    });
+    return paragraphs;
+  }
+
+  function ensureSelectedVisible(visibleRows, allRows) {
+    if (!visibleRows.length) return;
+    if (!visibleRows.some((row) => row.sentence_id === state.selectedSentenceId)) {
+      state.selectedSentenceId = visibleRows[0].sentence_id;
+    } else if (!findRowById(allRows, state.selectedSentenceId)) {
+      state.selectedSentenceId = allRows[0].sentence_id;
+    }
+  }
+
+  function selectSentence(sentenceId, scrollIntoView) {
+    state.selectedSentenceId = sentenceId;
+    renderDocument(state.payload);
+    renderInspector(state.payload);
+    if (scrollIntoView) {
+      const target = elements.documentList.querySelector(`[data-sentence-id="${cssEscape(sentenceId)}"]`);
+      if (target) {
+        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+  }
+
+  function jumpToParagraph(paragraphId) {
+    const paragraph = state.payload.paragraphs.find((item) => item.paragraph_id === paragraphId);
+    if (!paragraph || !paragraph.rows.length) return;
+    selectSentence(paragraph.rows[0].sentence_id, true);
+  }
+
+  function jumpToSpan(spanId) {
+    const span = state.payload.suspicious_spans.find((item) => item.span_id === spanId);
+    if (!span || !span.sentence_ids.length) return;
+    selectSentence(span.sentence_ids[0], true);
+  }
+
+  function handleKeydown(event) {
+    if (elements.workspaceView.hidden) return;
+    const target = event.target;
+    if (target && ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName)) return;
+    const visibleRows = getVisibleRows(state.payload || { rows: [] });
+    if (!visibleRows.length) return;
+    const currentIndex = visibleRows.findIndex((row) => row.sentence_id === state.selectedSentenceId);
+
+    if (event.altKey && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+      event.preventDefault();
+      moveBySpan(event.key === "ArrowDown" ? 1 : -1);
+      return;
+    }
+
+    if (event.shiftKey && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+      event.preventDefault();
+      moveByFlagged(visibleRows, currentIndex, event.key === "ArrowDown" ? 1 : -1);
+      return;
+    }
+
+    if (event.key === "ArrowDown" && currentIndex < visibleRows.length - 1) {
+      event.preventDefault();
+      selectSentence(visibleRows[currentIndex + 1].sentence_id, true);
+      return;
+    }
+    if (event.key === "ArrowUp" && currentIndex > 0) {
+      event.preventDefault();
+      selectSentence(visibleRows[currentIndex - 1].sentence_id, true);
+    }
+  }
+
+  function moveByFlagged(rows, currentIndex, direction) {
+    let index = currentIndex + direction;
+    while (index >= 0 && index < rows.length) {
+      if (rows[index].is_flagged) {
+        selectSentence(rows[index].sentence_id, true);
+        return;
+      }
+      index += direction;
+    }
+  }
+
+  function moveBySpan(direction) {
+    const spans = state.payload.suspicious_spans || [];
+    if (!spans.length) return;
+    const currentRow = findRowById(state.payload.rows, state.selectedSentenceId);
+    const currentSpanIndex = spans.findIndex((span) => currentRow && span.sentence_ids.includes(currentRow.sentence_id));
+    const nextIndex = clampIndex(currentSpanIndex + direction, spans.length);
+    const span = spans[nextIndex];
+    if (span && span.sentence_ids.length) {
+      selectSentence(span.sentence_ids[0], true);
+    }
+  }
+
+  function clampIndex(index, length) {
+    if (length <= 0) return 0;
+    if (index < 0) return 0;
+    if (index >= length) return length - 1;
+    return index;
+  }
+
+  function searchableText(row) {
+    return [
+      row.sentence_id,
+      row.section,
+      row.subsection,
+      row.clean_text,
+      row.raw_tex_fragment,
+      row.summary,
+      row.source_file,
+      row.top_match ? row.top_match.source_label : "",
+      row.top_match ? row.top_match.matched_text : "",
+    ]
+      .join(" ")
+      .toLowerCase();
+  }
+
+  function featureMarkup(features) {
+    return features
+      .map(
+        (feature) => `
+          <div class="pf-feature">
+            <div>
+              <div>${escapeHtml(feature.label)}</div>
+              <div class="pf-feature__bar"><span style="width: ${Math.max(0, Math.min(100, Number(feature.value) * 100))}%;"></span></div>
+            </div>
+            <strong>${Number(feature.value).toFixed(2)}</strong>
+          </div>
+        `
+      )
+      .join("");
+  }
+
+  function matchCard(match) {
+    const phrases = match.overlapping_phrases && match.overlapping_phrases.length
+      ? `<div class="pf-pill-list" style="margin-top:10px;">${match.overlapping_phrases
+          .slice(0, 5)
+          .map((phrase) => `<span class="pf-pill">${escapeHtml(phrase)}</span>`)
+          .join("")}</div>`
+      : "";
+    return `
+      <div class="pf-match">
+        <strong>${escapeHtml(match.source_label)}</strong>
+        <div class="pf-match__meta">Vector ${Number(match.vector_similarity).toFixed(2)} · Lexical ${Number(
+      match.lexical_overlap
+    ).toFixed(2)} · Rare phrase ${Number(match.rare_phrase_overlap).toFixed(2)}</div>
+        <div class="pf-snippet" style="margin-top:10px;">${escapeHtml(match.matched_text)}</div>
+        ${phrases}
+      </div>
+    `;
+  }
+
+  function lineLabel(start, end) {
+    return start === end ? `L${start}` : `L${start}-L${end}`;
+  }
+
+  function plagiarismLabel() {
+    return (state.payload && state.payload.legend && state.payload.legend.plagiarism_label) || appConfig.plagiarism_label || "Estimated overlap risk";
+  }
+
+  function aiLabel() {
+    return (state.payload && state.payload.legend && state.payload.legend.ai_label) || appConfig.ai_label || "Estimated AI-assisted tell risk";
+  }
+
+  function shortName(path) {
+    return String(path || "").split(/[\\/]/).pop() || String(path || "");
+  }
+
+  function findRowById(rows, sentenceId) {
+    return rows.find((row) => row.sentence_id === sentenceId) || null;
+  }
+
+  function formatFileSize(bytes) {
+    if (!bytes) return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    let value = bytes;
+    let unit = 0;
+    while (value >= 1024 && unit < units.length - 1) {
+      value /= 1024;
+      unit += 1;
+    }
+    return `${value.toFixed(value >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  function escapeAttribute(value) {
+    return escapeHtml(value).replaceAll("'", "&#39;");
+  }
+
+  function cssEscape(value) {
+    if (window.CSS && window.CSS.escape) {
+      return window.CSS.escape(value);
+    }
+    return String(value).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
